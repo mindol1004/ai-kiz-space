@@ -1,16 +1,16 @@
-// src/app/style-guide/page.tsx
 import type { Metadata } from 'next';
-import { ThemeProvider } from 'next-themes';
-import { ThemeToggle } from '@/components/ThemeToggle';
+
+import ThemeProviderWrapper from '@/src/components/ThemeProviderWrapper';
+import ThemeToggle from '@/src/components/ThemeToggle';
 
 export const metadata: Metadata = {
   title: 'Style Guide',
   description: 'Design system documentation',
 };
 
-export default function StyleGuide() {
+export default function StyleGuide(): React.ReactElement {
   return (
-    <ThemeProvider>
+    <ThemeProviderWrapper>
       <div className="min-h-screen p-8">
         <div className="flex justify-between items-center mb-8">
           <h1 className="text-3xl font-bold">AI Kiz Design System</h1>
@@ -47,11 +47,11 @@ export default function StyleGuide() {
           </div>
         </section>
       </div>
-    </ThemeProvider>
+    </ThemeProviderWrapper>
   );
 }
 
-function ColorCard({ name, value }: { name: string; value: string }) {
+function ColorCard({ name, value }: Readonly<{ name: string; value: string }>): React.ReactElement {
   return (
     <div className="border rounded-lg p-4">
       <div className="h-12 w-full rounded mb-2" style={{ backgroundColor: value.split(' / ')[0] }}></div>
@@ -61,7 +61,7 @@ function ColorCard({ name, value }: { name: string; value: string }) {
   );
 }
 
-function TypographySample({ size, children }: { size: string; children: React.ReactNode }) {
+function TypographySample({ size, children }: Readonly<{ size: string; children: React.ReactNode }>): React.ReactElement {
   return (
     <div className="border rounded p-4">
       <p className={`${size} font-medium`}>{children}</p>
@@ -70,10 +70,10 @@ function TypographySample({ size, children }: { size: string; children: React.Re
   );
 }
 
-function SpacingSample({ size, children }: { size: string; children: React.ReactNode }) {
+function SpacingSample({ size, children }: Readonly<{ size: string; children: React.ReactNode }>): React.ReactElement {
   return (
     <div className="border rounded p-4">
-      <div className={`h-12 w-full rounded mb-2`} style={{ backgroundColor: 'rgba(59, 130, 246, 0.3)' }}></div>
+      <div className="h-12 w-full rounded mb-2" style={{ backgroundColor: 'rgba(59, 130, 246, 0.3)' }}></div>
       <p className="font-medium">Spacing {size}</p>
       <p className="text-sm text-zinc-600 dark:text-zinc-400 mt-1">{children}</p>
     </div>
