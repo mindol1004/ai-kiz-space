@@ -346,6 +346,11 @@ const registerSchema = z.object({
 | POST | `/api/orders/[id]/return` | 반품 신청 | USER + 본인 |
 | POST | `/api/orders/[id]/exchange` | 교환 신청 | USER + 본인 |
 | POST | `/api/orders/[id]/confirm` | 구매 확정 | USER + 본인 |
+| GET | `/api/orders/[id]/payments` | 결제 이력 조회 | USER + 본인 |
+| GET | `/api/orders/[id]/refunds` | 환불 이력 조회 | USER + 본인 |
+| POST | `/api/orders/[id]/items/[itemId]/cancel` | 개별 상품 취소 | USER + 본인 |
+| POST | `/api/orders/[id]/items/[itemId]/return` | 개별 상품 반품 | USER + 본인 |
+| POST | `/api/orders/[id]/items/[itemId]/exchange` | 개별 상품 교환 | USER + 본인 |
 
 #### POST /api/orders — 주문 생성
 
@@ -491,6 +496,10 @@ const registerSchema = z.object({
 | GET | `/api/admin/orders/[id]` | 주문 상세 |
 | PATCH | `/api/admin/orders/[id]/status` | 상태 변경 |
 | PATCH | `/api/admin/orders/[id]/tracking` | 운송장 입력 |
+| GET | `/api/admin/orders/[id]/payments` | 결제 이력 상세 |
+| GET | `/api/admin/orders/[id]/refunds` | 환불 이력 상세 |
+| POST | `/api/admin/orders/[id]/refund` | 관리자 환불 처리 |
+| PATCH | `/api/admin/orders/[id]/items/[itemId]/status` | 개별 주문 상품 상태 변경 |
 
 ### 6.4 회원 관리
 
