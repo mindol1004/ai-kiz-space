@@ -119,6 +119,33 @@ enum BannerPosition {
   SHOP_TOP
 }
 
+enum ReportTargetType {
+  POST
+  COMMENT
+  REVIEW
+}
+
+enum ReportReason {
+  SPAM
+  ABUSE
+  INAPPROPRIATE
+  MISINFORMATION
+  OTHER
+}
+
+enum ReportStatus {
+  PENDING
+  REVIEWED
+  DISMISSED
+}
+
+enum StockChangeType {
+  IN
+  OUT
+  ADJUST
+  RETURN
+}
+
 // ─── Models ──────────────────────────────────────────────
 
 model User {
@@ -158,6 +185,7 @@ model User {
   pointHistories PointHistory[]
   notifications  Notification[]
   auditLogs      AuditLog[]
+  reports        Report[]
 
   @@index([provider, providerId], name: "users_provider_providerId")
   @@index([status, createdAt], name: "users_status_createdAt")
@@ -257,16 +285,17 @@ model Product {
   createdAt   DateTime      @default(now())
   updatedAt   DateTime      @updatedAt
 
-  category    Category       @relation(fields: [categoryId], references: [id], onDelete: Restrict)
-  brand       Brand          @relation(fields: [brandId], references: [id], onDelete: Restrict)
-  images      ProductImage[]
-  options     ProductOption[]
-  cartItems   CartItem[]
-  wishlists   Wishlist[]
-  reviews     Review[]
-  orderItems  OrderItem[]
-  linkedPosts Post[]
-  exhibitions ExhibitionProduct[]
+  category       Category           @relation(fields: [categoryId], references: [id], onDelete: Restrict)
+  brand          Brand              @relation(fields: [brandId], references: [id], onDelete: Restrict)
+  images         ProductImage[]
+  options        ProductOption[]
+  cartItems      CartItem[]
+  wishlists      Wishlist[]
+  reviews        Review[]
+  orderItems     OrderItem[]
+  linkedPosts    Post[]
+  exhibitions    ExhibitionProduct[]
+  stockHistories StockHistory[]
 
   @@index([categoryId], name: "products_categoryId")
   @@index([brandId], name: "products_brandId")
@@ -300,9 +329,10 @@ model ProductOption {
   createdAt       DateTime @default(now())
   updatedAt       DateTime @updatedAt
 
-  product    Product     @relation(fields: [productId], references: [id], onDelete: Cascade)
-  cartItems  CartItem[]
-  orderItems OrderItem[]
+  product        Product        @relation(fields: [productId], references: [id], onDelete: Cascade)
+  cartItems      CartItem[]
+  orderItems     OrderItem[]
+  stockHistories StockHistory[]
 
   @@index([productId])
   @@map("product_options")
@@ -694,4 +724,56 @@ model AuditLog {
   @@index([userId, createdAt], name: "audit_logs_userId_createdAt")
   @@index([entity, entityId], name: "audit_logs_entity_entityId")
   @@map("audit_logs")
+}
+
+model Report {
+  id          String           @id @default(cuid())
+  reporterId  String
+  targetType  ReportTargetType
+  targetId    String
+  reason      ReportReason
+  description String?
+  status      ReportStatus     @default(PENDING)
+  processedAt DateTime?
+  processedBy String?
+  createdAt   DateTime         @default(now())
+
+  reporter User @relation(fields: [reporterId], references: [id], onDelete: Cascade)
+
+  @@unique([reporterId, targetType, targetId])
+  @@index([targetType, targetId], name: "reports_targetType_targetId")
+  @@index([status, createdAt], name: "reports_status_createdAt")
+  @@map("reports")
+}
+
+model StockHistory {
+  id             String          @id @default(cuid())
+  productId      String
+  optionId       String?
+  type           StockChangeType
+  quantity       Int
+  beforeStock    Int
+  afterStock     Int
+  reason         String
+  relatedOrderId String?
+  createdBy      String
+  createdAt      DateTime        @default(now())
+
+  product Product        @relation(fields: [productId], references: [id], onDelete: Cascade)
+  option  ProductOption? @relation(fields: [optionId], references: [id], onDelete: SetNull)
+
+  @@index([productId, createdAt], name: "stock_histories_productId_createdAt")
+  @@index([optionId])
+  @@map("stock_histories")
+}
+
+model SearchKeyword {
+  id             String   @id @default(cuid())
+  keyword        String   @unique
+  count          Int      @default(1)
+  lastSearchedAt DateTime @default(now())
+  createdAt      DateTime @default(now())
+
+  @@index([count])
+  @@map("search_keywords")
 }

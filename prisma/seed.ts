@@ -751,6 +751,43 @@ async function main(): Promise<void> {
 
   console.log("✅ 감사 로그 생성 완료");
 
+  // ─── 인기 검색어 ─────────────────────────────────────
+
+  await prisma.searchKeyword.createMany({
+    data: [
+      { keyword: "유기농 이유식", count: 1520 },
+      { keyword: "블록 장난감", count: 1340 },
+      { keyword: "아기 로션", count: 1280 },
+      { keyword: "유아 신발", count: 1150 },
+      { keyword: "그림책 세트", count: 980 },
+      { keyword: "기저귀", count: 920 },
+      { keyword: "유모차", count: 870 },
+      { keyword: "수면조끼", count: 750 },
+      { keyword: "이유식 식기", count: 680 },
+      { keyword: "교육 완구", count: 620 },
+    ],
+  });
+
+  console.log("✅ 인기 검색어 생성 완료");
+
+  // ─── 재고 이력 (초기 입고) ────────────────────────────
+
+  for (const product of products) {
+    await prisma.stockHistory.create({
+      data: {
+        productId: product.id,
+        type: "IN",
+        quantity: product.stock,
+        beforeStock: 0,
+        afterStock: product.stock,
+        reason: "초기 입고",
+        createdBy: admin.id,
+      },
+    });
+  }
+
+  console.log("✅ 재고 이력 생성 완료");
+
   console.log("\n🎉 시드 데이터 생성 완료!");
   console.log("──────────────────────────────────");
   console.log("관리자: admin@kidsspace.kr / Admin1234!");
