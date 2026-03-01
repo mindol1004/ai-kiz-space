@@ -110,7 +110,7 @@ This document provides guidelines for agentic coding agents working in this repo
 | "댓글 만들어줘" | FN-012, Comment 스키마, /api/posts/[id]/comments, 대댓글, 채택 |
 | "좋아요 만들어줘" | PostLike/CommentLike, /api/posts/[id]/like, 낙관적 업데이트 |
 | "북마크 만들어줘" | Bookmark 스키마, /api/posts/[id]/bookmark, 토글 |
-| "신고 만들어줘" | /api/posts/[id]/report, 신고 사유 선택, 3건 자동 블라인드 |
+| "신고 만들어줘" | FN-016, Report 스키마, /api/posts/[id]/report, 신고 사유 선택, 3건 자동 블라인드, 관리자 신고 관리 |
 | "커뮤니티 만들어줘" | 위 전부 한 번에 |
 
 #### 리뷰 & 평점
@@ -151,11 +151,17 @@ This document provides guidelines for agentic coding agents working in this repo
 |------|-----------|
 | "관리자 대시보드 만들어줘" | SCR-ADMIN-001, /api/admin/dashboard, 매출/주문/회원/미처리 |
 | "관리자 상품관리 만들어줘" | /api/admin/products, 상품 CRUD, 이미지/옵션/재고 |
+| "관리자 재고관리 만들어줘" | FN-015, SCR-ADMIN-011~012, /api/admin/inventory, 입고/출고/조정, StockHistory, 저재고 알림 |
 | "관리자 주문관리 만들어줘" | /api/admin/orders, 상태 변경, 운송장 입력 |
 | "관리자 회원관리 만들어줘" | /api/admin/users, 등급/상태 변경, 회원 상세 |
 | "관리자 게시글관리 만들어줘" | /api/admin/posts, 삭제, 블라인드 |
+| "관리자 리뷰관리 만들어줘" | /api/admin/reviews, 검수, 삭제, 베스트 리뷰 선정, 상태 변경 |
+| "관리자 신고관리 만들어줘" | FN-016, SCR-ADMIN-013, /api/admin/reports, Report 스키마, 검토/기각, 3건 자동 블라인드 |
+| "관리자 브랜드관리 만들어줘" | FN-017, /api/admin/brands, Brand CRUD, 로고 업로드 |
+| "관리자 공지관리 만들어줘" | FN-017, SCR-ADMIN-014, /api/admin/notices, 공지 CRUD, 상단 고정 |
+| "관리자 FAQ관리 만들어줘" | FN-017, SCR-ADMIN-015, /api/admin/faq, FAQ CRUD, 카테고리별, 순서 변경 |
 | "관리자 통계 만들어줘" | /api/admin/analytics, 매출/회원/상품/트래픽 차트 |
-| "감사로그 만들어줘" | AuditLog 스키마, 관리자 행위 자동 기록 |
+| "감사로그 만들어줘" | AuditLog 스키마, /api/admin/audit-logs, 관리자 행위 자동 기록, 조회 UI |
 | "관리자 만들어줘" | 위 전부 한 번에 |
 
 #### 인프라 & 품질

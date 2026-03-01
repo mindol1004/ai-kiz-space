@@ -111,12 +111,65 @@ enum NotificationType {
   POINT
   SYSTEM
   EVENT
+  LOW_STOCK
 }
 
 enum BannerPosition {
   MAIN_HERO
   MAIN_MIDDLE
   SHOP_TOP
+}
+
+enum ReportTargetType {
+  POST
+  COMMENT
+  REVIEW
+}
+
+enum ReportReason {
+  SPAM
+  ABUSE
+  INAPPROPRIATE
+  MISINFORMATION
+  OTHER
+}
+
+enum ReportStatus {
+  PENDING
+  REVIEWED
+  DISMISSED
+}
+
+enum StockChangeType {
+  IN
+  OUT
+  ADJUST
+  RETURN
+  CANCEL
+}
+
+enum PaymentStatus {
+  PENDING
+  COMPLETED
+  FAILED
+  CANCELLED
+  PARTIAL_REFUNDED
+  REFUNDED
+}
+
+enum RefundStatus {
+  PENDING
+  COMPLETED
+  FAILED
+}
+
+enum OrderItemStatus {
+  ORDERED
+  CANCELLED
+  RETURN_REQUEST
+  RETURNED
+  EXCHANGE_REQUEST
+  EXCHANGED
 }
 
 // ─── Models ──────────────────────────────────────────────
@@ -158,6 +211,8 @@ model User {
   pointHistories PointHistory[]
   notifications  Notification[]
   auditLogs      AuditLog[]
+  reports        Report[]
+  stockHistories StockHistory[]
 
   @@index([provider, providerId], name: "users_provider_providerId")
   @@index([status, createdAt], name: "users_status_createdAt")
@@ -245,8 +300,9 @@ model Product {
   brandId     String
   ageGroup    AgeGroup?
   thumbnail   String
-  stock       Int           @default(0)
-  salesCount  Int           @default(0)
+  stock             Int           @default(0)
+  lowStockThreshold Int           @default(10)
+  salesCount        Int           @default(0)
   viewCount   Int           @default(0)
   avgRating   Float         @default(0)
   reviewCount Int           @default(0)
@@ -257,16 +313,17 @@ model Product {
   createdAt   DateTime      @default(now())
   updatedAt   DateTime      @updatedAt
 
-  category    Category       @relation(fields: [categoryId], references: [id], onDelete: Restrict)
-  brand       Brand          @relation(fields: [brandId], references: [id], onDelete: Restrict)
-  images      ProductImage[]
-  options     ProductOption[]
-  cartItems   CartItem[]
-  wishlists   Wishlist[]
-  reviews     Review[]
-  orderItems  OrderItem[]
-  linkedPosts Post[]
-  exhibitions ExhibitionProduct[]
+  category       Category           @relation(fields: [categoryId], references: [id], onDelete: Restrict)
+  brand          Brand              @relation(fields: [brandId], references: [id], onDelete: Restrict)
+  images         ProductImage[]
+  options        ProductOption[]
+  cartItems      CartItem[]
+  wishlists      Wishlist[]
+  reviews        Review[]
+  orderItems     OrderItem[]
+  linkedPosts    Post[]
+  exhibitions    ExhibitionProduct[]
+  stockHistories StockHistory[]
 
   @@index([categoryId], name: "products_categoryId")
   @@index([brandId], name: "products_brandId")
@@ -300,9 +357,10 @@ model ProductOption {
   createdAt       DateTime @default(now())
   updatedAt       DateTime @updatedAt
 
-  product    Product     @relation(fields: [productId], references: [id], onDelete: Cascade)
-  cartItems  CartItem[]
-  orderItems OrderItem[]
+  product        Product        @relation(fields: [productId], references: [id], onDelete: Cascade)
+  cartItems      CartItem[]
+  orderItems     OrderItem[]
+  stockHistories StockHistory[]
 
   @@index([productId])
   @@map("product_options")
@@ -339,39 +397,45 @@ model Wishlist {
 }
 
 model Order {
-  id             String      @id @default(cuid())
-  orderNumber    String      @unique
-  userId         String
-  status         OrderStatus @default(PENDING)
-  totalAmount    Int
-  discountAmount Int         @default(0)
-  shippingFee    Int         @default(0)
-  pointUsed      Int         @default(0)
-  finalAmount    Int
-  recipientName  String
-  recipientPhone String
-  zipCode        String
-  address        String
-  addressDetail  String?
-  shippingMemo   String?
-  paymentMethod  PaymentMethod
-  paymentKey     String?
-  paidAt         DateTime?
-  shippedAt      DateTime?
-  deliveredAt    DateTime?
-  confirmedAt    DateTime?
-  cancelledAt    DateTime?
-  cancelReason   String?
-  trackingNumber String?
-  trackingCompany String?
-  couponId       String?
-  createdAt      DateTime    @default(now())
-  updatedAt      DateTime    @updatedAt
+  id                   String        @id @default(cuid())
+  orderNumber          String        @unique
+  userId               String
+  status               OrderStatus   @default(PENDING)
+  totalAmount          Int
+  saleDiscountAmount   Int           @default(0)
+  couponDiscountAmount Int           @default(0)
+  discountAmount       Int           @default(0)
+  shippingFee          Int           @default(0)
+  pointUsed            Int           @default(0)
+  finalAmount          Int
+  pointEarned          Int           @default(0)
+  recipientName        String
+  recipientPhone       String
+  zipCode              String
+  address              String
+  addressDetail        String?
+  shippingMemo         String?
+  paymentMethod        PaymentMethod
+  paymentKey           String?
+  paidAt               DateTime?
+  shippedAt            DateTime?
+  deliveredAt          DateTime?
+  confirmedAt          DateTime?
+  cancelledAt          DateTime?
+  cancelReason         String?
+  trackingNumber       String?
+  trackingCompany      String?
+  couponId             String?
+  expiresAt            DateTime?
+  createdAt            DateTime      @default(now())
+  updatedAt            DateTime      @updatedAt
 
   user       User       @relation(fields: [userId], references: [id], onDelete: Restrict)
   coupon     Coupon?    @relation(fields: [couponId], references: [id], onDelete: SetNull)
   orderItems OrderItem[]
   reviews    Review[]
+  payments   Payment[]
+  refunds    Refund[]
 
   @@index([userId, createdAt], name: "orders_userId_createdAt")
   @@index([status, createdAt], name: "orders_status_createdAt")
@@ -379,22 +443,34 @@ model Order {
 }
 
 model OrderItem {
-  id          String  @id @default(cuid())
-  orderId     String
-  productId   String
-  optionId    String?
-  productName String
-  optionName  String?
-  price       Int
-  quantity    Int
-  totalPrice  Int
-  createdAt   DateTime @default(now())
+  id                String          @id @default(cuid())
+  orderId           String
+  productId         String
+  optionId          String?
+  productName       String
+  optionName        String?
+  price             Int
+  quantity          Int
+  totalPrice        Int
+  status            OrderItemStatus @default(ORDERED)
+  cancelReason      String?
+  cancelledAt       DateTime?
+  returnReason      String?
+  returnRequestedAt DateTime?
+  returnedAt        DateTime?
+  exchangeReason    String?
+  exchangeProductId String?
+  exchangeOptionId  String?
+  exchangedAt       DateTime?
+  refundAmount      Int             @default(0)
+  createdAt         DateTime        @default(now())
 
   order   Order          @relation(fields: [orderId], references: [id], onDelete: Cascade)
   product Product        @relation(fields: [productId], references: [id], onDelete: Restrict)
   option  ProductOption? @relation(fields: [optionId], references: [id], onDelete: SetNull)
 
   @@index([orderId])
+  @@index([status])
   @@map("order_items")
 }
 
@@ -678,6 +754,55 @@ model FAQ {
   @@map("faqs")
 }
 
+model Payment {
+  id                   String        @id @default(cuid())
+  orderId              String
+  paymentMethod        PaymentMethod
+  amount               Int
+  status               PaymentStatus @default(PENDING)
+  paymentKey           String?
+  transactionId        String?
+  receiptUrl           String?
+  failReason           String?
+  virtualAccountBank   String?
+  virtualAccountNumber String?
+  virtualAccountHolder String?
+  virtualAccountExpiry DateTime?
+  paidAt               DateTime?
+  createdAt            DateTime      @default(now())
+  updatedAt            DateTime      @updatedAt
+
+  order   Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  refunds Refund[]
+
+  @@index([orderId])
+  @@index([paymentKey])
+  @@index([status])
+  @@map("payments")
+}
+
+model Refund {
+  id           String       @id @default(cuid())
+  orderId      String
+  paymentId    String
+  amount       Int
+  reason       String
+  status       RefundStatus @default(PENDING)
+  refundKey    String?
+  refundMethod String?
+  refundedAt   DateTime?
+  createdAt    DateTime     @default(now())
+  updatedAt    DateTime     @updatedAt
+
+  order   Order   @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  payment Payment @relation(fields: [paymentId], references: [id], onDelete: Cascade)
+
+  @@index([orderId])
+  @@index([paymentId])
+  @@index([status])
+  @@map("refunds")
+}
+
 model AuditLog {
   id        String   @id @default(cuid())
   userId    String
@@ -694,4 +819,58 @@ model AuditLog {
   @@index([userId, createdAt], name: "audit_logs_userId_createdAt")
   @@index([entity, entityId], name: "audit_logs_entity_entityId")
   @@map("audit_logs")
+}
+
+model Report {
+  id          String           @id @default(cuid())
+  reporterId  String
+  targetType  ReportTargetType
+  targetId    String
+  reason      ReportReason
+  description String?
+  status      ReportStatus     @default(PENDING)
+  processedAt DateTime?
+  processedBy String?
+  createdAt   DateTime         @default(now())
+
+  reporter User @relation(fields: [reporterId], references: [id], onDelete: Cascade)
+
+  @@unique([reporterId, targetType, targetId])
+  @@index([targetType, targetId], name: "reports_targetType_targetId")
+  @@index([status, createdAt], name: "reports_status_createdAt")
+  @@map("reports")
+}
+
+model StockHistory {
+  id             String          @id @default(cuid())
+  productId      String
+  optionId       String?
+  type           StockChangeType
+  quantity       Int
+  beforeStock    Int
+  afterStock     Int
+  reason         String
+  relatedOrderId String?
+  createdBy      String
+  createdAt      DateTime        @default(now())
+
+  product Product        @relation(fields: [productId], references: [id], onDelete: Cascade)
+  option  ProductOption? @relation(fields: [optionId], references: [id], onDelete: SetNull)
+  creator User           @relation(fields: [createdBy], references: [id])
+
+  @@index([productId, createdAt], name: "stock_histories_productId_createdAt")
+  @@index([optionId])
+  @@index([createdBy])
+  @@map("stock_histories")
+}
+
+model SearchKeyword {
+  id             String   @id @default(cuid())
+  keyword        String   @unique
+  count          Int      @default(1)
+  lastSearchedAt DateTime @default(now())
+  createdAt      DateTime @default(now())
+
+  @@index([count])
+  @@map("search_keywords")
 }

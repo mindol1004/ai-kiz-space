@@ -346,6 +346,11 @@ const registerSchema = z.object({
 | POST | `/api/orders/[id]/return` | 반품 신청 | USER + 본인 |
 | POST | `/api/orders/[id]/exchange` | 교환 신청 | USER + 본인 |
 | POST | `/api/orders/[id]/confirm` | 구매 확정 | USER + 본인 |
+| GET | `/api/orders/[id]/payments` | 결제 이력 조회 | USER + 본인 |
+| GET | `/api/orders/[id]/refunds` | 환불 이력 조회 | USER + 본인 |
+| POST | `/api/orders/[id]/items/[itemId]/cancel` | 개별 상품 취소 | USER + 본인 |
+| POST | `/api/orders/[id]/items/[itemId]/return` | 개별 상품 반품 | USER + 본인 |
+| POST | `/api/orders/[id]/items/[itemId]/exchange` | 개별 상품 교환 | USER + 본인 |
 
 #### POST /api/orders — 주문 생성
 
@@ -454,6 +459,14 @@ const registerSchema = z.object({
 
 ---
 
+### 5.13 검색 키워드 API
+
+| 메서드 | URL | 설명 | 인증 |
+|--------|-----|------|------|
+| GET | `/api/search/popular` | 인기 검색어 Top 10 (1시간 캐시) | X |
+
+---
+
 ## 6. 관리자 API
 
 > 모든 관리자 API는 `/api/admin` 접두사, `requireRole('ADMIN')` 미들웨어 적용
@@ -483,6 +496,10 @@ const registerSchema = z.object({
 | GET | `/api/admin/orders/[id]` | 주문 상세 |
 | PATCH | `/api/admin/orders/[id]/status` | 상태 변경 |
 | PATCH | `/api/admin/orders/[id]/tracking` | 운송장 입력 |
+| GET | `/api/admin/orders/[id]/payments` | 결제 이력 상세 |
+| GET | `/api/admin/orders/[id]/refunds` | 환불 이력 상세 |
+| POST | `/api/admin/orders/[id]/refund` | 관리자 환불 처리 |
+| PATCH | `/api/admin/orders/[id]/items/[itemId]/status` | 개별 주문 상품 상태 변경 |
 
 ### 6.4 회원 관리
 
@@ -515,8 +532,53 @@ const registerSchema = z.object({
 | GET | `/api/admin/analytics/revenue` | 매출 통계 |
 | GET | `/api/admin/analytics/users` | 회원 통계 |
 | GET | `/api/admin/analytics/products` | 상품 통계 |
+| GET | `/api/admin/analytics/traffic` | 트래픽 통계 |
 
 **감사 로그**: 모든 관리자 CUD 작업은 AuditLog에 자동 기록 (backend-expert Middleware)
+
+### 6.6 재고 관리
+
+| 메서드 | URL | 설명 |
+|--------|-----|------|
+| GET | `/api/admin/inventory` | 재고 현황 목록 (저재고 필터, 상품/옵션별) |
+| PATCH | `/api/admin/inventory/[productId]` | 재고 수량 수정 |
+| POST | `/api/admin/inventory/adjust` | 재고 일괄 조정 (사유 필수) |
+| POST | `/api/admin/inventory/stock-in` | 입고 등록 |
+| GET | `/api/admin/inventory/history` | 재고 변동 이력 (기간 필터, CSV 내보내기) |
+| GET | `/api/admin/inventory/low-stock` | 저재고 상품 목록 |
+
+### 6.7 신고 관리
+
+| 메서드 | URL | 설명 |
+|--------|-----|------|
+| GET | `/api/admin/reports` | 신고 목록 (상태 필터, 대상 유형 필터) |
+| GET | `/api/admin/reports/[id]` | 신고 상세 |
+| PATCH | `/api/admin/reports/[id]/review` | 신고 검토 처리 (REVIEWED) |
+| PATCH | `/api/admin/reports/[id]/dismiss` | 신고 기각 (DISMISSED, 블라인드 해제) |
+| GET | `/api/admin/reports/stats` | 신고 통계 (유형별, 기간별) |
+
+### 6.8 공지사항/FAQ/브랜드 관리
+
+| 메서드 | URL | 설명 |
+|--------|-----|------|
+| POST | `/api/admin/notices` | 공지사항 등록 |
+| PATCH | `/api/admin/notices/[id]` | 공지사항 수정 |
+| DELETE | `/api/admin/notices/[id]` | 공지사항 삭제 |
+| POST | `/api/admin/faq` | FAQ 등록 |
+| PATCH | `/api/admin/faq/[id]` | FAQ 수정 |
+| DELETE | `/api/admin/faq/[id]` | FAQ 삭제 |
+| PATCH | `/api/admin/faq/reorder` | FAQ 순서 변경 |
+| GET | `/api/admin/brands` | 브랜드 목록 (관리용) |
+| POST | `/api/admin/brands` | 브랜드 등록 |
+| PATCH | `/api/admin/brands/[id]` | 브랜드 수정 |
+| DELETE | `/api/admin/brands/[id]` | 브랜드 삭제 |
+
+### 6.9 감사 로그
+
+| 메서드 | URL | 설명 |
+|--------|-----|------|
+| GET | `/api/admin/audit-logs` | 감사 로그 목록 (관리자별, 엔티티별, 기간별 필터) |
+| GET | `/api/admin/audit-logs/[id]` | 감사 로그 상세 (변경 전후 diff) |
 
 ---
 
