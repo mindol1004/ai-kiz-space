@@ -15,7 +15,7 @@ metadata:
 ### 1. OWASP Top 10 대응
 
 | 순위 | 위협 | Next.js 대응 전략 |
-|------|------|-------------------|
+| --- | --- | --- |
 | A01 | Broken Access Control | Middleware 인가, Server Component 권한 검사 |
 | A02 | Cryptographic Failures | bcrypt 해싱, HTTPS 강제, 환경변수 관리 |
 | A03 | Injection | Zod 입력 검증, Prisma Parameterized Query |
@@ -30,6 +30,7 @@ metadata:
 ### 2. 인증/인가 보안
 
 #### 인증 설계
+
 ```typescript
 // shared/lib/auth.ts
 import NextAuth from 'next-auth';
@@ -77,6 +78,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
 ```
 
 #### 비밀번호 정책
+
 ```typescript
 // shared/lib/password.ts
 import { hash } from 'bcryptjs';
@@ -99,6 +101,7 @@ export async function hashPassword(password: string): Promise<string> {
 ```
 
 #### RBAC (역할 기반 접근 제어)
+
 ```typescript
 // shared/lib/rbac.ts
 type Role = 'admin' | 'manager' | 'user' | 'guest';
@@ -239,6 +242,7 @@ export function validateEnv(): z.infer<typeof envSchema> {
 ```
 
 **비밀 관리 규칙:**
+
 - `.env.local`은 `.gitignore`에 반드시 포함
 - 프로덕션 비밀은 Vercel Environment Variables 또는 Vault 사용
 - 클라이언트에 노출되는 변수는 `NEXT_PUBLIC_` 접두사만 사용
@@ -276,6 +280,7 @@ export function decrypt(encryptedText: string, key: string): string {
 ```
 
 #### 개인정보 마스킹
+
 ```typescript
 // shared/lib/masking.ts
 export function maskEmail(email: string): string {
@@ -366,6 +371,7 @@ export function validateOrigin(req: NextRequest): void {
 ## 보안 체크리스트
 
 ### 인증/인가
+
 - [ ] 비밀번호 bcrypt 해싱 (salt rounds ≥ 12)
 - [ ] 세션 만료 시간 설정 (24시간 이하)
 - [ ] JWT Secret 최소 32자 이상
@@ -374,6 +380,7 @@ export function validateOrigin(req: NextRequest): void {
 - [ ] Middleware에서 라우트 보호
 
 ### 입력/출력
+
 - [ ] 모든 입력 Zod 스키마 검증
 - [ ] SQL/NoSQL Injection 방지 (ORM Parameterized Query)
 - [ ] XSS 방지 (React 자동 이스케이프, DOMPurify)
@@ -381,6 +388,7 @@ export function validateOrigin(req: NextRequest): void {
 - [ ] 에러 메시지에 내부 정보 미포함
 
 ### 데이터
+
 - [ ] HTTPS 강제 (HSTS 헤더)
 - [ ] 민감 데이터 암호화 (AES-256-GCM)
 - [ ] 개인정보 마스킹/익명화
@@ -388,6 +396,7 @@ export function validateOrigin(req: NextRequest): void {
 - [ ] 클라이언트 노출 변수 `NEXT_PUBLIC_` 접두사만 사용
 
 ### 인프라
+
 - [ ] 보안 헤더 설정 (CSP, HSTS, X-Frame-Options 등)
 - [ ] Rate Limiting 적용
 - [ ] 의존성 취약점 검사 (npm audit)

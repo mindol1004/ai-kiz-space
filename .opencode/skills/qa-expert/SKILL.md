@@ -15,7 +15,8 @@ metadata:
 ### 1. 테스트 전략 수립
 
 #### 테스트 피라미드
-```
+
+```text
               ╱╲
              ╱  ╲          E2E 테스트 (5~10%)
             ╱    ╲         핵심 사용자 플로우
@@ -31,7 +32,7 @@ metadata:
 #### 테스트 유형별 도구 및 대상
 
 | 유형 | 도구 | 대상 | 실행 시점 |
-|------|------|------|-----------|
+| --- | --- | --- | --- |
 | 단위 테스트 | Vitest | 순수 함수, 도메인 엔티티, 커스텀 훅, Zod 스키마 | 개발 중 (watch), PR |
 | 컴포넌트 테스트 | Vitest + Testing Library | React 컴포넌트 렌더링, 인터랙션 | 개발 중, PR |
 | 통합 테스트 | Vitest | API Routes, Server Actions, DB 연동 | PR, CI |
@@ -43,6 +44,7 @@ metadata:
 ### 2. 테스트 케이스 설계
 
 #### 체계적 테스트 케이스 작성법
+
 ```markdown
 # TC-001: [테스트 대상] - [테스트 시나리오]
 
@@ -75,6 +77,7 @@ metadata:
 ```
 
 #### 테스트 케이스 분류 (MCDC)
+
 ```markdown
 ## 입력 조건 분류
 
@@ -96,6 +99,7 @@ metadata:
 ### 3. 단위 테스트 가이드
 
 #### 순수 함수 테스트
+
 ```typescript
 // shared/utils/format.test.ts
 import { formatPrice, formatDate, truncateText } from './format';
@@ -126,6 +130,7 @@ describe('truncateText', () => {
 ```
 
 #### 도메인 엔티티 테스트
+
 ```typescript
 // entities/order/model.test.ts
 import { Order } from './model';
@@ -249,6 +254,7 @@ test.describe('결제 플로우', () => {
 ```
 
 #### Playwright 설정
+
 ```typescript
 // playwright.config.ts
 import { defineConfig, devices } from '@playwright/test';
@@ -328,7 +334,7 @@ coverage: {
 #### 커버리지 목표
 
 | 계층 | 목표 | 근거 |
-|------|------|------|
+| --- | --- | --- |
 | Domain (entities/) | 95%+ | 핵심 비즈니스 로직, 버그 허용 불가 |
 | Application (features/) | 85%+ | 유스케이스, 주요 분기 커버 |
 | Shared (utils/) | 90%+ | 재사용 유틸, 엣지 케이스 커버 |
@@ -412,8 +418,10 @@ Critical | Major | Minor | Trivial
 
 ## 관련 로그
 ```
+
 에러 로그 내용
-```
+
+```text
 
 ## 원인 분석 (선택)
 [추정 원인]

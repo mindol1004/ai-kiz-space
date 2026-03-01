@@ -15,7 +15,8 @@ metadata:
 ### 1. API 통신 설계
 
 #### RESTful API 설계 원칙
-```
+
+```text
 GET    /api/products          → 목록 조회
 GET    /api/products/:id      → 단건 조회
 POST   /api/products          → 생성
@@ -27,6 +28,7 @@ GET    /api/products?page=1&limit=20&category=shoes&sort=price:asc
 ```
 
 #### API 응답 형식 표준
+
 ```typescript
 // 성공 응답
 interface ApiSuccessResponse<T> {
@@ -71,7 +73,8 @@ export function errorResponse(
 ```
 
 #### HTTP 상태 코드 가이드
-```
+
+```text
 2xx 성공
   200 OK              → GET, PATCH 성공
   201 Created         → POST 생성 성공
@@ -100,6 +103,7 @@ export function errorResponse(
 ### 2. 데이터 페칭 패턴
 
 #### Next.js fetch 캐싱 전략
+
 ```typescript
 // 정적 데이터: 빌드 시 캐시, 재검증 없음
 const staticData = await fetch(url, { cache: 'force-cache' });
@@ -116,6 +120,7 @@ const taggedData = await fetch(url, { next: { tags: ['products'] } });
 ```
 
 #### 클라이언트 페칭 (TanStack Query)
+
 ```typescript
 // features/products/hooks/useProducts.ts
 'use client';
@@ -163,6 +168,7 @@ export function useCreateProduct() {
 ```
 
 #### Fetch 래퍼 (에러 처리, 타입 안전성)
+
 ```typescript
 // shared/lib/api-client.ts
 class ApiClient {
@@ -230,6 +236,7 @@ export const apiClient = new ApiClient();
 ### 3. 실시간 통신
 
 #### Server-Sent Events (SSE)
+
 ```typescript
 // app/api/notifications/stream/route.ts
 export async function GET(req: NextRequest): Promise<Response> {
@@ -300,6 +307,7 @@ export function useNotificationStream() {
 ```
 
 #### WebSocket (Socket.io)
+
 ```typescript
 // 대규모 실시간 통신이 필요한 경우
 // 별도 WebSocket 서버 또는 Pusher/Ably 같은 서비스 활용
@@ -361,7 +369,7 @@ export function middleware(req: NextRequest): NextResponse {
 
 ### 5. CDN 및 에셋 최적화
 
-```
+```text
 요청 흐름:
   사용자 → CDN Edge (가장 가까운 노드)
             ├── Cache HIT  → 즉시 응답 (수 ms)
@@ -375,6 +383,7 @@ export function middleware(req: NextRequest): NextResponse {
 ```
 
 #### 이미지 최적화 설정
+
 ```typescript
 // next.config.ts
 images: {
@@ -391,6 +400,7 @@ images: {
 ### 6. 네트워크 성능 최적화
 
 #### 요청 최적화
+
 ```typescript
 // 병렬 요청 (Promise.all)
 const [products, categories, user] = await Promise.all([
@@ -412,6 +422,7 @@ GET /api/products?cursor=eyJpZCI6MTAwfQ&limit=20
 ```
 
 #### 응답 압축
+
 ```typescript
 // Next.js는 gzip/brotli 압축 자동 지원
 // next.config.ts
@@ -421,6 +432,7 @@ const nextConfig: NextConfig = {
 ```
 
 #### Prefetch / Preload
+
 ```tsx
 import Link from 'next/link';
 
@@ -437,6 +449,7 @@ import Link from 'next/link';
 ### 7. 네트워크 보안
 
 #### HTTPS 강제
+
 ```typescript
 // Middleware에서 HTTPS 리다이렉트
 if (
@@ -450,6 +463,7 @@ if (
 ```
 
 #### Rate Limiting
+
 ```typescript
 // shared/lib/rate-limit.ts
 import { LRUCache } from 'lru-cache';
@@ -504,6 +518,7 @@ export const POST = withErrorHandler(async (req: NextRequest) => {
 ### 8. 네트워크 디버깅
 
 #### 트러블슈팅 체크리스트
+
 ```markdown
 ### 느린 응답
 - [ ] Network 탭에서 TTFB(Time to First Byte) 확인

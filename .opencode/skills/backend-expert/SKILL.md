@@ -15,7 +15,7 @@ metadata:
 
 모든 백엔드 코드는 다음 사이클을 따릅니다:
 
-```
+```text
 1. RED    → API/비즈니스 로직의 기대 동작을 정의하는 테스트를 먼저 작성
 2. GREEN  → 테스트를 통과하는 최소한의 구현
 3. REFACTOR → 테스트를 유지하며 코드 개선
@@ -24,7 +24,7 @@ metadata:
 ### 백엔드 테스트 전략
 
 | 테스트 유형 | 대상 | 도구 | 비율 |
-|-------------|------|------|------|
+| --- | --- | --- | --- |
 | 단위 테스트 | 도메인 로직, 유스케이스, 유틸 함수, 검증 스키마 | Vitest | 65% |
 | 통합 테스트 | API Routes, Server Actions, DB 연동, 미들웨어 | Vitest + Supertest | 30% |
 | E2E 테스트 | 전체 API 플로우 (인증 → 주문 → 결제) | Playwright | 5% |
@@ -34,6 +34,7 @@ metadata:
 ### 1. API Routes 구현
 
 #### RESTful API Route
+
 ```typescript
 // app/api/products/route.ts
 import { NextResponse } from 'next/server';
@@ -72,6 +73,7 @@ export const POST = withErrorHandler(async (req: NextRequest) => {
 ```
 
 #### 동적 Route
+
 ```typescript
 // app/api/products/[id]/route.ts
 import { NextResponse } from 'next/server';
@@ -119,6 +121,7 @@ export const DELETE = withErrorHandler(async (
 ```
 
 #### 테스트 예시: API Route
+
 ```typescript
 // __tests__/integration/api/products.test.ts
 import { GET, POST } from '@/app/api/products/route';
@@ -237,6 +240,7 @@ export async function placeOrder(input: PlaceOrderInput): Promise<ActionResult> 
 ```
 
 #### 테스트 예시: Server Action
+
 ```typescript
 // __tests__/features/orders/actions.test.ts
 import { placeOrder } from '@/features/orders/actions';
@@ -387,6 +391,7 @@ export class PrismaProductRepository implements ProductRepository {
 ```
 
 #### In-Memory Repository (테스트용)
+
 ```typescript
 // shared/test-utils/repositories/in-memory-product.ts
 import type { ProductRepository } from '@/entities/product/repository';
@@ -446,6 +451,7 @@ export class InMemoryProductRepository implements ProductRepository {
 ### 4. 인증/인가
 
 #### Middleware
+
 ```typescript
 // middleware.ts
 import { NextResponse } from 'next/server';
@@ -483,6 +489,7 @@ export const config = {
 ```
 
 #### 인가 헬퍼
+
 ```typescript
 // shared/lib/auth-guard.ts
 import { auth } from '@/shared/lib/auth';
@@ -591,6 +598,7 @@ export function withErrorHandler(handler: RouteHandler): RouteHandler {
 ```
 
 #### 테스트 예시: 에러 클래스
+
 ```typescript
 // __tests__/shared/lib/errors.test.ts
 import { NotFoundError, ValidationError, UnauthorizedError } from '@/shared/lib/errors';
@@ -635,6 +643,7 @@ export type UpdateProductInput = z.infer<typeof updateProductSchema>;
 ```
 
 #### 테스트 예시: Zod 스키마
+
 ```typescript
 // __tests__/entities/product/schema.test.ts
 import { productSchema } from '@/entities/product/schema';
@@ -746,6 +755,7 @@ export function checkRateLimit(
 ## 작업 프로세스
 
 ### Step 1: 요구사항 → 테스트 케이스 도출
+
 ```markdown
 ## API: POST /api/orders (주문 생성)
 
@@ -760,9 +770,11 @@ export function checkRateLimit(
 ```
 
 ### Step 2: RED → GREEN → REFACTOR 반복
+
 한 번에 하나의 테스트 케이스만 집중하여 사이클을 반복합니다.
 
 ### Step 3: 통합 검증
+
 단위 테스트 완료 후 통합 테스트로 전체 흐름을 검증합니다.
 
 ## 사용 시점

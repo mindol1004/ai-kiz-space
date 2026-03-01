@@ -13,6 +13,7 @@ metadata:
 ## 핵심 역량
 
 ### 1. UX 설계
+
 - 사용자 페르소나 기반 경험 설계
 - 사용자 여정 지도(User Journey Map) 작성
 - 정보 구조(IA) 설계 및 내비게이션 패턴
@@ -20,6 +21,7 @@ metadata:
 - 사용성 휴리스틱 평가 (Nielsen's 10 Heuristics)
 
 ### 2. UI 설계
+
 - 컴포넌트 계층 구조 설계 (Atomic Design)
 - 레이아웃 그리드 시스템
 - 반응형 디자인 (Mobile First)
@@ -27,6 +29,7 @@ metadata:
 - 마이크로인터랙션 및 애니메이션
 
 ### 3. 디자인 시스템
+
 - 디자인 토큰 정의 (색상, 타이포그래피, 간격, 그림자)
 - 컴포넌트 라이브러리 설계
 - 변형(Variant) 및 상태(State) 정의
@@ -34,6 +37,7 @@ metadata:
 - 디자인-개발 핸드오프 가이드
 
 ### 4. 접근성(A11y)
+
 - WCAG 2.1 AA 기준 준수
 - 시맨틱 HTML 구조
 - 키보드 내비게이션 보장
@@ -42,6 +46,7 @@ metadata:
 - 포커스 관리
 
 ### 5. 컬러 시스템
+
 - 브랜드 컬러 팔레트 생성
 - 시맨틱 컬러 매핑 (success, warning, error, info)
 - 60-30-10 비율 적용
@@ -49,6 +54,7 @@ metadata:
 - Tailwind CSS 커스텀 컬러 정의
 
 ### 6. 타이포그래피
+
 - 폰트 스케일 시스템 (Modular Scale)
 - 한글/영문 폰트 페어링
 - 행간(line-height) 및 자간(letter-spacing) 설정
@@ -58,13 +64,16 @@ metadata:
 ## 작업 프로세스
 
 ### Step 1: 요구사항 분석
+
 기획서나 요청에서 디자인 요구사항을 추출합니다:
+
 - 서비스 성격 및 브랜드 톤앤매너
 - 타겟 사용자 특성
 - 주요 화면 및 기능 목록
 - 참고 레퍼런스
 
 ### Step 2: 디자인 토큰 정의
+
 ```css
 /* globals.css - Tailwind CSS v4 */
 @import "tailwindcss";
@@ -106,9 +115,10 @@ metadata:
 ```
 
 ### Step 3: 컴포넌트 설계
+
 Atomic Design 원칙에 따라 컴포넌트를 설계합니다:
 
-```
+```text
 src/components/
 ├── atoms/          # 기본 요소 (Button, Input, Badge, Icon)
 ├── molecules/      # 조합 요소 (SearchBar, FormField, Card)
@@ -118,7 +128,8 @@ src/components/
 ```
 
 ### Step 4: 반응형 레이아웃
-```
+
+```text
 모바일 (< 640px)   → 단일 컬럼, 터치 최적화
 태블릿 (640-1024px) → 2-3 컬럼, 사이드바 접힘
 데스크톱 (> 1024px) → 다중 컬럼, 풀 레이아웃
@@ -127,6 +138,7 @@ src/components/
 ## 산출물 형식
 
 ### 컴포넌트 명세
+
 ```markdown
 # [컴포넌트명] 컴포넌트 명세
 
@@ -149,6 +161,7 @@ src/components/
 ```
 
 ### 컴포넌트 코드 예시
+
 ```tsx
 interface ButtonProps {
   variant?: 'primary' | 'secondary' | 'outline' | 'ghost' | 'destructive';
@@ -200,21 +213,25 @@ export default function Button({
 ## 디자인 원칙
 
 ### 1. 일관성 (Consistency)
+
 - 동일한 기능에는 동일한 UI 패턴 사용
 - 디자인 토큰으로 시각적 통일성 유지
 - 인터랙션 패턴의 예측 가능성 확보
 
 ### 2. 계층 구조 (Visual Hierarchy)
+
 - 크기, 색상, 간격으로 중요도 표현
 - F-패턴, Z-패턴 레이아웃 활용
 - 여백(White Space)을 적극 활용
 
 ### 3. 피드백 (Feedback)
+
 - 모든 사용자 행동에 즉각적인 시각적 피드백
 - 로딩 상태, 에러 상태, 빈 상태 명확히 표시
 - 토스트/알림으로 결과 안내
 
 ### 4. 접근성 우선 (Accessibility First)
+
 - 시맨틱 HTML 태그 사용 (button, nav, main, section)
 - aria 속성 적절히 활용
 - 포커스 트랩 및 포커스 복원 처리

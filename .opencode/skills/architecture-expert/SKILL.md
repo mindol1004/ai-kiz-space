@@ -17,7 +17,7 @@ metadata:
 
 모든 코드 작성은 이 사이클을 반드시 따릅니다:
 
-```
+```text
 ┌─────────────────────────────────────────────────────────┐
 │                   TDD 사이클                              │
 │                                                         │
@@ -30,6 +30,7 @@ metadata:
 ```
 
 ### TDD 3대 법칙 (Uncle Bob)
+
 1. 실패하는 단위 테스트를 작성하기 전에는 프로덕션 코드를 작성하지 않는다
 2. 컴파일이 되지 않거나 실패하는 단위 테스트가 있으면 더 이상 단위 테스트를 작성하지 않는다
 3. 현재 실패하는 테스트를 통과할 정도로만 프로덕션 코드를 작성한다
@@ -37,6 +38,7 @@ metadata:
 ### TDD 워크플로우 상세
 
 #### Step 1: RED - 실패하는 테스트 작성
+
 ```typescript
 // __tests__/entities/order/order.test.ts
 import { Order } from '@/entities/order/model';
@@ -82,6 +84,7 @@ describe('Order', () => {
 ```
 
 #### Step 2: GREEN - 최소한의 구현
+
 ```typescript
 // entities/order/model.ts
 import type { OrderItem } from './order-item';
@@ -119,6 +122,7 @@ export class Order {
 ```
 
 #### Step 3: REFACTOR - 코드 개선 (테스트 통과 유지)
+
 ```typescript
 // 리팩토링 후에도 모든 테스트가 통과해야 한다
 export class Order {
@@ -153,7 +157,7 @@ export class Order {
 
 ### 테스트 피라미드
 
-```
+```text
             ╱╲
            ╱  ╲         E2E 테스트 (5~10%)
           ╱    ╲        Playwright / Cypress
@@ -167,7 +171,7 @@ export class Order {
 ```
 
 | 테스트 유형 | 비율 | 대상 | 도구 |
-|-------------|------|------|------|
+| --- | --- | --- | --- |
 | 단위 테스트 | 65~80% | 도메인 엔티티, 유틸 함수, 커스텀 훅, 비즈니스 로직 | Vitest |
 | 통합 테스트 | 15~25% | API Routes, Server Actions, DB 연동, 컴포넌트 통합 | Vitest + Testing Library |
 | E2E 테스트 | 5~10% | 핵심 사용자 시나리오 (로그인, 결제 등) | Playwright |
@@ -210,6 +214,7 @@ import '@testing-library/jest-dom/vitest';
 ### 테스트 패턴
 
 #### 1. AAA 패턴 (Arrange-Act-Assert)
+
 ```typescript
 it('할인율을 적용한 최종 가격을 반환한다', () => {
   // Arrange
@@ -225,6 +230,7 @@ it('할인율을 적용한 최종 가격을 반환한다', () => {
 ```
 
 #### 2. Test Double 활용 (Mock, Stub, Fake)
+
 ```typescript
 // Repository Mock 예시
 import { vi } from 'vitest';
@@ -258,6 +264,7 @@ describe('PlaceOrderUseCase', () => {
 ```
 
 #### 3. React 컴포넌트 테스트
+
 ```typescript
 // __tests__/features/auth/components/LoginForm.test.tsx
 import { render, screen } from '@testing-library/react';
@@ -301,6 +308,7 @@ describe('LoginForm', () => {
 ```
 
 #### 4. API Route 테스트
+
 ```typescript
 // __tests__/app/api/orders/route.test.ts
 import { POST } from '@/app/api/orders/route';
@@ -332,6 +340,7 @@ describe('POST /api/orders', () => {
 ```
 
 #### 5. Custom Hook 테스트
+
 ```typescript
 // __tests__/features/cart/hooks/useCart.test.ts
 import { renderHook, act } from '@testing-library/react';
@@ -366,6 +375,7 @@ describe('useCart', () => {
 ## 핵심 역량
 
 ### 1. 시스템 아키텍처 설계
+
 - 전체 시스템 구조 설계 및 다이어그램 작성
 - 모놀리식 vs 마이크로서비스 의사결정
 - API 설계 (REST, GraphQL, tRPC)
@@ -373,6 +383,7 @@ describe('useCart', () => {
 - 이벤트 드리븐 아키텍처
 
 ### 2. Next.js 앱 구조 설계
+
 - App Router 기반 라우팅 설계
 - Server / Client Component 분리 전략
 - 렌더링 전략 결정 (SSR, SSG, ISR, Streaming)
@@ -381,7 +392,8 @@ describe('useCart', () => {
 - Server Actions 설계 패턴
 
 ### 3. 디렉토리 구조 (Feature-Sliced Design + TDD)
-```
+
+```text
 src/
 ├── app/                        # Next.js App Router
 │   ├── (public)/               # 비인증 라우트 그룹
@@ -448,6 +460,7 @@ src/
 ```
 
 **테스트 파일 배치 규칙:**
+
 - **단위 테스트**: 대상 파일과 같은 위치에 `.test.ts` (co-located)
 - **기능 테스트**: `features/{feature}/__tests__/` 디렉토리
 - **통합 테스트**: `__tests__/integration/` 디렉토리
@@ -455,6 +468,7 @@ src/
 - **테스트 유틸**: `shared/test-utils/`
 
 ### 4. 디자인 패턴
+
 - **Repository Pattern**: 데이터 접근 추상화 (테스트 시 Mock 용이)
 - **Factory Pattern**: 객체 생성 캡슐화 (테스트 데이터 팩토리)
 - **Strategy Pattern**: 알고리즘 교체 가능 설계
@@ -463,7 +477,8 @@ src/
 - **Dependency Injection**: 의존성 주입으로 테스트 가능한 구조
 
 ### 5. 클린 아키텍처 계층
-```
+
+```text
 ┌─────────────────────────────────────┐
 │  Presentation (app/, widgets/)      │  UI, 페이지, 라우팅
 ├─────────────────────────────────────┤
@@ -487,6 +502,7 @@ Domain은 어떤 계층에도 의존하지 않음
 ### 6. SOLID 원칙 적용 (TDD로 검증)
 
 #### Single Responsibility (단일 책임)
+
 ```typescript
 // 나쁜 예: 하나의 함수가 여러 책임
 async function handleOrder(data: OrderData): Promise<void> {
@@ -534,6 +550,7 @@ describe('OrderService.place', () => {
 ```
 
 #### Dependency Inversion (의존성 역전)
+
 ```typescript
 // 추상화 정의 (Domain 계층) → 테스트 시 Mock 가능
 interface OrderRepository {
@@ -570,6 +587,7 @@ class InMemoryOrderRepository implements OrderRepository {
 ```
 
 ### 7. 테스트 데이터 팩토리
+
 ```typescript
 // shared/test-utils/factories/order.ts
 import { Order } from '@/entities/order/model';
@@ -606,6 +624,7 @@ export function createTestOrder(params: OrderFactoryParams = {}): Order {
 ```
 
 ### 8. 에러 처리 아키텍처
+
 ```typescript
 abstract class AppError extends Error {
   abstract readonly statusCode: number;
@@ -641,6 +660,7 @@ describe('NotFoundError', () => {
 ```
 
 ### 9. 성능 아키텍처
+
 - **코드 스플리팅**: 동적 import, React.lazy
 - **캐싱 전략**: ISR, HTTP Cache, React Cache
 - **이미지 최적화**: next/image, WebP/AVIF
@@ -649,6 +669,7 @@ describe('NotFoundError', () => {
 - **상태 관리**: 서버 상태(TanStack Query) vs 클라이언트 상태(Zustand)
 
 ### 10. 보안 아키텍처
+
 - 인증/인가 전략 (NextAuth.js, JWT, 세션)
 - CSRF 보호
 - Rate Limiting
@@ -659,7 +680,9 @@ describe('NotFoundError', () => {
 ## 작업 프로세스 (TDD 기반)
 
 ### Step 1: 요구사항 → 테스트 케이스 도출
+
 기능 요구사항에서 테스트 케이스를 먼저 정의합니다:
+
 ```markdown
 # 요구사항: 장바구니에 상품 추가
 
@@ -673,9 +696,11 @@ describe('NotFoundError', () => {
 ```
 
 ### Step 2: Red-Green-Refactor 반복
+
 테스트 케이스를 하나씩 RED → GREEN → REFACTOR 사이클로 구현합니다. 한 번에 하나의 테스트만 집중합니다.
 
 ### Step 3: 아키텍처 결정 기록 (ADR)
+
 ```markdown
 # ADR-001: [결정 제목]
 
@@ -701,6 +726,7 @@ Accepted | Proposed | Deprecated
 ```
 
 ### Step 4: 기술 스택 선정
+
 ```markdown
 | 카테고리 | 선택 | 이유 |
 |----------|------|------|
@@ -719,6 +745,7 @@ Accepted | Proposed | Deprecated
 ## 아키텍처 리뷰 체크리스트
 
 ### TDD 준수
+
 - [ ] 모든 기능에 대한 테스트가 먼저 작성되었는가?
 - [ ] Red-Green-Refactor 사이클을 따랐는가?
 - [ ] 단위 테스트 커버리지가 80% 이상인가?
@@ -727,27 +754,32 @@ Accepted | Proposed | Deprecated
 - [ ] 테스트 데이터 팩토리를 활용하고 있는가?
 
 ### 구조
+
 - [ ] 디렉토리 구조가 도메인을 명확히 반영하는가?
 - [ ] 계층 간 의존성 방향이 올바른가?
 - [ ] 순환 의존성이 없는가?
 - [ ] 공통 모듈이 적절히 추출되었는가?
 
 ### 확장성
+
 - [ ] 새 기능 추가 시 기존 코드 수정 없이 가능한가?
 - [ ] 수평 확장이 가능한 구조인가?
 - [ ] 설정값이 하드코딩되지 않았는가?
 
 ### 유지보수성
+
 - [ ] 코드 변경의 영향 범위가 제한적인가?
 - [ ] 테스트 작성이 용이한 구조인가?
 - [ ] 에러 추적이 용이한가?
 
 ### 성능
+
 - [ ] 불필요한 리렌더링이 없는가?
 - [ ] 번들 사이즈가 적절한가?
 - [ ] 캐싱 전략이 수립되었는가?
 
 ### 보안
+
 - [ ] 인증/인가가 적절히 적용되었는가?
 - [ ] 입력값 검증이 서버 측에서 이루어지는가?
 - [ ] 민감 정보가 클라이언트에 노출되지 않는가?

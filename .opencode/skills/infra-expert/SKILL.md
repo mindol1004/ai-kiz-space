@@ -15,7 +15,8 @@ metadata:
 ### 1. 배포 전략
 
 #### Vercel 배포 (권장)
-```
+
+```text
 ┌──────────────┐    ┌──────────────┐    ┌──────────────┐
 │  GitHub Push  │───▶│  Vercel CI   │───▶│  Production  │
 │              │    │  Build+Test  │    │  Edge Network│
@@ -52,6 +53,7 @@ metadata:
 ```
 
 #### Docker 컨테이너화
+
 ```dockerfile
 # Dockerfile
 FROM node:20-alpine AS base
@@ -236,7 +238,7 @@ jobs:
 
 ### 3. 환경 구성
 
-```
+```text
 ┌──────────────────────────────────────────────┐
 │              환경별 구성                       │
 ├──────────┬──────────┬──────────┬─────────────┤
@@ -280,6 +282,7 @@ export function getConfig(): (typeof envConfig)[Env] {
 ### 4. 모니터링 및 로깅
 
 #### 구조화된 로깅
+
 ```typescript
 // shared/lib/logger.ts
 type LogLevel = 'debug' | 'info' | 'warn' | 'error';
@@ -334,6 +337,7 @@ export const logger = new Logger(
 ```
 
 #### 헬스체크 엔드포인트
+
 ```typescript
 // app/api/health/route.ts
 import { NextResponse } from 'next/server';
@@ -366,6 +370,7 @@ export async function GET(): Promise<NextResponse> {
 ### 5. 성능 및 스케일링
 
 #### Next.js 빌드 최적화
+
 ```typescript
 // next.config.ts
 import type { NextConfig } from 'next';
@@ -394,7 +399,8 @@ export default withBundleAnalyzer(nextConfig);
 ```
 
 #### 캐싱 전략
-```
+
+```text
 정적 자산 (.js, .css, 이미지)
   → CDN Edge Cache (1년, immutable)
 
@@ -412,9 +418,10 @@ DB 쿼리
 ### 6. 장애 대응
 
 #### 장애 등급 및 대응 절차
+
 ```markdown
 | 등급 | 정의 | 대응 시간 | 에스컬레이션 |
-|------|------|-----------|-------------|
+| --- | --- | --- | --- |
 | P1 (Critical) | 서비스 전체 장애 | 15분 이내 | 즉시 팀 전체 |
 | P2 (Major) | 핵심 기능 장애 | 30분 이내 | 담당 팀 |
 | P3 (Minor) | 부분 기능 장애 | 4시간 이내 | 담당자 |
@@ -422,6 +429,7 @@ DB 쿼리
 ```
 
 #### 롤백 절차
+
 ```bash
 # Vercel 롤백
 vercel rollback [deployment-url]
@@ -438,7 +446,7 @@ npx prisma migrate resolve --rolled-back [migration-name]
 
 ```markdown
 | 대상 | 주기 | 보관 기간 | 방식 |
-|------|------|-----------|------|
+| --- | --- | --- | --- |
 | DB 전체 | 일 1회 | 30일 | pg_dump → S3 |
 | DB 증분 | 6시간 | 7일 | WAL 아카이브 |
 | 환경변수 | 변경 시 | 영구 | Git (암호화) |
@@ -448,6 +456,7 @@ npx prisma migrate resolve --rolled-back [migration-name]
 ## 인프라 체크리스트
 
 ### 배포
+
 - [ ] CI/CD 파이프라인 구성 (lint → test → build → deploy)
 - [ ] Preview 배포 (PR별 URL)
 - [ ] 프로덕션 배포 자동화
@@ -455,18 +464,21 @@ npx prisma migrate resolve --rolled-back [migration-name]
 - [ ] 환경별 환경변수 분리
 
 ### 보안
+
 - [ ] HTTPS 강제
 - [ ] 보안 헤더 설정
 - [ ] 비밀 관리 (Vercel Env / Vault)
 - [ ] 의존성 취약점 자동 검사
 
 ### 모니터링
+
 - [ ] 헬스체크 엔드포인트
 - [ ] 구조화된 로그
 - [ ] 에러 추적 (Sentry 등)
 - [ ] 업타임 모니터링
 
 ### 성능
+
 - [ ] CDN 활용
 - [ ] 이미지 최적화
 - [ ] 번들 크기 모니터링

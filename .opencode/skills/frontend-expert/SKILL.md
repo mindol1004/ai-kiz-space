@@ -15,7 +15,7 @@ metadata:
 
 모든 프론트엔드 코드는 다음 사이클을 따릅니다:
 
-```
+```text
 1. RED    → 컴포넌트/훅의 동작을 정의하는 테스트를 먼저 작성
 2. GREEN  → 테스트를 통과하는 최소한의 구현
 3. REFACTOR → 테스트를 유지하며 코드 개선
@@ -24,7 +24,7 @@ metadata:
 ### 프론트엔드 테스트 전략
 
 | 테스트 유형 | 대상 | 도구 | 비율 |
-|-------------|------|------|------|
+| --- | --- | --- | --- |
 | 단위 테스트 | 유틸 함수, 커스텀 훅, 도메인 로직 | Vitest | 60% |
 | 컴포넌트 테스트 | UI 컴포넌트 렌더링, 인터랙션 | Testing Library | 25% |
 | E2E 테스트 | 핵심 사용자 플로우 | Playwright | 15% |
@@ -34,6 +34,7 @@ metadata:
 ### 1. Next.js App Router 구현
 
 #### Server Component (기본)
+
 ```tsx
 import { getProducts } from '@/entities/product/api';
 
@@ -63,6 +64,7 @@ export default async function ProductListPage({
 ```
 
 #### Client Component (인터랙션 필요 시)
+
 ```tsx
 'use client';
 
@@ -112,6 +114,7 @@ export function AddToCartButton({
 ```
 
 #### 테스트 예시: Client Component
+
 ```tsx
 // __tests__/features/cart/components/AddToCartButton.test.tsx
 import { render, screen } from '@testing-library/react';
@@ -152,7 +155,7 @@ describe('AddToCartButton', () => {
 ### 2. 렌더링 전략
 
 | 전략 | 사용 시점 | 구현 |
-|------|----------|------|
+| --- | --- | --- |
 | SSR (동적) | 사용자별 데이터, 실시간성 필요 | `export const dynamic = 'force-dynamic'` |
 | SSG (정적) | 변경 없는 콘텐츠 | 기본값 (빌드 시 생성) |
 | ISR (증분) | 주기적 갱신 콘텐츠 | `export const revalidate = 3600` |
@@ -161,6 +164,7 @@ describe('AddToCartButton', () => {
 ### 3. 상태 관리
 
 #### 서버 상태 (TanStack Query)
+
 ```tsx
 // features/products/hooks/useProducts.ts
 'use client';
@@ -183,6 +187,7 @@ export function useProducts({ category, page = 1 }: UseProductsOptions = {}) {
 ```
 
 #### 클라이언트 상태 (Zustand)
+
 ```tsx
 // features/cart/store.ts
 import { create } from 'zustand';
@@ -253,6 +258,7 @@ export const useCartStore = create<CartStore>()(
 ```
 
 #### 테스트 예시: Zustand Store
+
 ```typescript
 // __tests__/features/cart/store.test.ts
 import { useCartStore } from '@/features/cart/store';
@@ -293,6 +299,7 @@ describe('CartStore', () => {
 ```
 
 ### 4. 폼 처리 (React Hook Form + Zod)
+
 ```tsx
 'use client';
 
@@ -375,6 +382,7 @@ export function LoginForm({ onSubmit }: LoginFormProps): React.ReactElement {
 ### 5. 데이터 페칭 패턴
 
 #### Server Component에서 직접 fetch
+
 ```tsx
 async function getProduct(id: string): Promise<Product> {
   const res = await fetch(`${process.env.API_URL}/products/${id}`, {
@@ -386,6 +394,7 @@ async function getProduct(id: string): Promise<Product> {
 ```
 
 #### Server Actions
+
 ```typescript
 // features/cart/actions.ts
 'use server';
@@ -417,6 +426,7 @@ export async function addToCart(
 ### 6. 에러/로딩/빈 상태 처리
 
 #### Error Boundary
+
 ```tsx
 // app/(secure)/products/error.tsx
 'use client';
@@ -448,6 +458,7 @@ export default function ProductsError({
 ```
 
 #### Loading (Suspense)
+
 ```tsx
 // app/(secure)/products/loading.tsx
 export default function ProductsLoading(): React.ReactElement {
@@ -468,6 +479,7 @@ export default function ProductsLoading(): React.ReactElement {
 ### 7. 성능 최적화
 
 #### 이미지 최적화
+
 ```tsx
 import Image from 'next/image';
 
@@ -483,6 +495,7 @@ import Image from 'next/image';
 ```
 
 #### 동적 Import
+
 ```tsx
 import dynamic from 'next/dynamic';
 
@@ -493,6 +506,7 @@ const Chart = dynamic(() => import('@/shared/components/Chart'), {
 ```
 
 #### React.memo / useMemo / useCallback
+
 ```tsx
 'use client';
 
@@ -559,11 +573,13 @@ export const ProductCard = memo(function ProductCard({
 ## 작업 프로세스
 
 ### Step 1: 명세 확인
+
 - 기획전문가의 기능 명세서에서 화면 요구사항 파악
 - 디자이너전문가의 컴포넌트 명세에서 UI 스펙 확인
 - 아키텍처전문가의 디렉토리 구조와 패턴 준수
 
 ### Step 2: 테스트 케이스 작성 (RED)
+
 ```markdown
 ## [컴포넌트명] 테스트 케이스
 - [ ] 기본 렌더링: 필수 요소가 모두 표시되는가
@@ -575,9 +591,11 @@ export const ProductCard = memo(function ProductCard({
 ```
 
 ### Step 3: 구현 (GREEN)
+
 테스트를 통과하는 최소한의 코드 작성
 
 ### Step 4: 리팩토링 (REFACTOR)
+
 테스트를 유지하며 코드 품질 개선 (중복 제거, 추상화, 성능 최적화)
 
 ## 사용 시점

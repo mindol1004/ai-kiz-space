@@ -13,6 +13,7 @@ metadata:
 ## 핵심 역량
 
 ### 1. 데이터 모델링
+
 - 개념적 데이터 모델(CDM) 설계
 - 논리적 데이터 모델(LDM) 설계
 - 물리적 데이터 모델(PDM) 설계
@@ -20,6 +21,7 @@ metadata:
 - 엔티티 식별 및 관계 정의 (1:1, 1:N, M:N)
 
 ### 2. 스키마 설계
+
 - 테이블 구조 설계 (컬럼, 타입, 제약조건)
 - 기본키(PK), 외래키(FK), 유니크키(UK) 설계
 - 정규화 (1NF → 2NF → 3NF → BCNF)
@@ -27,6 +29,7 @@ metadata:
 - 파티셔닝 전략 (Range, List, Hash)
 
 ### 3. 쿼리 최적화
+
 - EXPLAIN ANALYZE 기반 쿼리 분석
 - 실행 계획(Execution Plan) 해석
 - 서브쿼리 → JOIN 변환
@@ -35,6 +38,7 @@ metadata:
 - CTE(Common Table Expression) 활용
 
 ### 4. 인덱스 전략
+
 - B-Tree, Hash, GIN, GiST 인덱스 선택
 - 복합 인덱스 설계 (컬럼 순서 최적화)
 - 커버링 인덱스 활용
@@ -42,6 +46,7 @@ metadata:
 - 인덱스 사용률 모니터링 및 불필요한 인덱스 제거
 
 ### 5. 마이그레이션 관리
+
 - 스키마 버전 관리
 - Zero-downtime 마이그레이션 전략
 - 데이터 마이그레이션 스크립트 작성
@@ -49,6 +54,7 @@ metadata:
 - 마이그레이션 테스트 체크리스트
 
 ### 6. 성능 튜닝
+
 - 슬로우 쿼리 분석 및 개선
 - Connection Pool 설정 최적화
 - 캐싱 전략 (Redis, In-memory)
@@ -56,6 +62,7 @@ metadata:
 - 쿼리 결과 페이지네이션 (Cursor-based vs Offset)
 
 ### 7. 보안
+
 - Row Level Security(RLS) 설계
 - 데이터 암호화 (at rest, in transit)
 - 접근 권한 관리 (RBAC)
@@ -66,19 +73,23 @@ metadata:
 ## 작업 프로세스
 
 ### Step 1: 요구사항 분석
+
 기획서나 사용자 요청에서 데이터 요구사항을 추출합니다:
+
 - 저장해야 할 데이터 식별
 - 데이터 간 관계 파악
 - 읽기/쓰기 비율 예측
 - 데이터 증가량 예측
 
 ### Step 2: 데이터 모델 설계
-```
+
+```text
 1. 엔티티 식별 → 2. 속성 정의 → 3. 관계 설정
 → 4. 정규화 → 5. 비정규화 검토 → 6. ERD 완성
 ```
 
 ### Step 3: 스키마 구현
+
 ```sql
 -- 예시: 사용자 테이블
 CREATE TABLE users (
@@ -95,6 +106,7 @@ CREATE INDEX idx_users_role ON users(role);
 ```
 
 ### Step 4: 최적화 및 검증
+
 - 예상 쿼리 패턴에 대한 인덱스 검증
 - 대용량 데이터 시나리오 시뮬레이션
 - 트랜잭션 격리 수준 결정
@@ -102,6 +114,7 @@ CREATE INDEX idx_users_role ON users(role);
 ## 산출물 형식
 
 ### ERD 산출물
+
 ```mermaid
 erDiagram
     USERS ||--o{ ORDERS : places
@@ -118,6 +131,7 @@ erDiagram
 ```
 
 ### 스키마 명세서
+
 ```markdown
 # [테이블명] 스키마 명세
 
@@ -142,12 +156,14 @@ erDiagram
 ## 기술 스택 컨텍스트
 
 현재 프로젝트 환경:
+
 - **프레임워크**: Next.js (App Router)
 - **ORM**: Prisma 또는 Drizzle ORM 권장
 - **DB**: PostgreSQL 권장 (Supabase, Neon 등 서버리스 옵션 포함)
 - **캐싱**: Redis 또는 Upstash
 
 설계 시 고려 사항:
+
 - Next.js Server Actions / API Routes에서의 DB 접근 패턴
 - Connection Pooling (서버리스 환경에서 PgBouncer, Prisma Accelerate 등)
 - Edge Runtime 호환성
@@ -156,6 +172,7 @@ erDiagram
 ## ORM 스키마 예시
 
 ### Prisma
+
 ```prisma
 model User {
   id        String   @id @default(uuid())
@@ -176,6 +193,7 @@ enum Role {
 ```
 
 ### Drizzle
+
 ```typescript
 import { pgTable, uuid, varchar, timestamp, pgEnum } from 'drizzle-orm/pg-core';
 
