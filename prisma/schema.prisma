@@ -111,6 +111,7 @@ enum NotificationType {
   POINT
   SYSTEM
   EVENT
+  LOW_STOCK
 }
 
 enum BannerPosition {
@@ -144,6 +145,7 @@ enum StockChangeType {
   OUT
   ADJUST
   RETURN
+  CANCEL
 }
 
 // ─── Models ──────────────────────────────────────────────
@@ -186,6 +188,7 @@ model User {
   notifications  Notification[]
   auditLogs      AuditLog[]
   reports        Report[]
+  stockHistories StockHistory[]
 
   @@index([provider, providerId], name: "users_provider_providerId")
   @@index([status, createdAt], name: "users_status_createdAt")
@@ -273,8 +276,9 @@ model Product {
   brandId     String
   ageGroup    AgeGroup?
   thumbnail   String
-  stock       Int           @default(0)
-  salesCount  Int           @default(0)
+  stock             Int           @default(0)
+  lowStockThreshold Int           @default(10)
+  salesCount        Int           @default(0)
   viewCount   Int           @default(0)
   avgRating   Float         @default(0)
   reviewCount Int           @default(0)
@@ -761,9 +765,11 @@ model StockHistory {
 
   product Product        @relation(fields: [productId], references: [id], onDelete: Cascade)
   option  ProductOption? @relation(fields: [optionId], references: [id], onDelete: SetNull)
+  creator User           @relation(fields: [createdBy], references: [id])
 
   @@index([productId, createdAt], name: "stock_histories_productId_createdAt")
   @@index([optionId])
+  @@index([createdBy])
   @@map("stock_histories")
 }
 
