@@ -24,7 +24,6 @@ async function main(): Promise<void> {
       nickname: "키즈공간관리자",
       role: "SUPER_ADMIN",
       grade: "VIP",
-      provider: "EMAIL",
       status: "ACTIVE",
     },
   });
@@ -42,7 +41,6 @@ async function main(): Promise<void> {
       role: "USER",
       grade: "SILVER",
       points: 5000,
-      provider: "EMAIL",
       status: "ACTIVE",
       children: {
         create: [
@@ -623,13 +621,39 @@ async function main(): Promise<void> {
 
   console.log("✅ 기획전 생성 완료");
 
-  // ─── 쿠폰 (테스트 사용자) ────────────────────────────
+  // ─── 쿠폰 템플릿 + 쿠폰 발급 ─────────────────────────
+
+  const welcomeTemplate = await prisma.couponTemplate.create({
+    data: {
+      name: "웰컴 쿠폰 10%",
+      discountType: "PERCENT",
+      discountValue: 10,
+      minOrderAmount: 30000,
+      maxDiscountAmount: 5000,
+      validDays: 90,
+      description: "신규 가입 회원 환영 쿠폰",
+    },
+  });
+
+  const openTemplate = await prisma.couponTemplate.create({
+    data: {
+      name: "오픈 기념 5,000원 할인",
+      discountType: "AMOUNT",
+      discountValue: 5000,
+      minOrderAmount: 50000,
+      validDays: 60,
+      totalQuantity: 1000,
+      issuedCount: 1,
+      description: "키즈공간 오픈 기념 쿠폰",
+    },
+  });
 
   await prisma.coupon.createMany({
     data: [
       {
+        templateId: welcomeTemplate.id,
         userId: testUser.id,
-        name: "웰컴 쿠폰 10%",
+        name: welcomeTemplate.name,
         code: "WELCOME10",
         discountType: "PERCENT",
         discountValue: 10,
@@ -638,8 +662,9 @@ async function main(): Promise<void> {
         expiresAt: new Date("2026-06-30"),
       },
       {
+        templateId: openTemplate.id,
         userId: testUser.id,
-        name: "오픈 기념 5,000원 할인",
+        name: openTemplate.name,
         code: "OPEN5000",
         discountType: "AMOUNT",
         discountValue: 5000,
@@ -649,7 +674,7 @@ async function main(): Promise<void> {
     ],
   });
 
-  console.log("✅ 쿠폰 생성 완료");
+  console.log("✅ 쿠폰 템플릿 + 쿠폰 생성 완료");
 
   // ─── 포인트 이력 (테스트 사용자) ──────────────────────
 

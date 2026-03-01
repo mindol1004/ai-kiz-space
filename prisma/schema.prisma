@@ -177,6 +177,7 @@ enum OrderItemStatus {
 model User {
   id                String    @id @default(cuid())
   email             String    @unique
+  emailVerified     DateTime?
   password          String?
   name              String
   nickname          String    @unique
@@ -185,8 +186,6 @@ model User {
   role              UserRole  @default(USER)
   grade             UserGrade @default(BRONZE)
   points            Int       @default(0)
-  provider          AuthProvider @default(EMAIL)
-  providerId        String?
   agreeMarketing    Boolean   @default(false)
   status            UserStatus @default(ACTIVE)
   loginFailCount    Int       @default(0)
@@ -196,6 +195,8 @@ model User {
   createdAt         DateTime  @default(now())
   updatedAt         DateTime  @updatedAt
 
+  accounts       Account[]
+  sessions       Session[]
   children       Child[]
   addresses      Address[]
   cartItems      CartItem[]
@@ -214,9 +215,50 @@ model User {
   reports        Report[]
   stockHistories StockHistory[]
 
-  @@index([provider, providerId], name: "users_provider_providerId")
   @@index([status, createdAt], name: "users_status_createdAt")
   @@map("users")
+}
+
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String? @db.Text
+  access_token      String? @db.Text
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String? @db.Text
+  session_state     String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+  @@index([userId])
+  @@map("accounts")
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@map("sessions")
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+  @@map("verification_tokens")
 }
 
 model Child {
@@ -370,14 +412,14 @@ model CartItem {
   id        String   @id @default(cuid())
   userId    String
   productId String
-  optionId  String
+  optionId  String?
   quantity  Int
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  user    User          @relation(fields: [userId], references: [id], onDelete: Cascade)
-  product Product       @relation(fields: [productId], references: [id], onDelete: Cascade)
-  option  ProductOption @relation(fields: [optionId], references: [id])
+  user    User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  product Product        @relation(fields: [productId], references: [id], onDelete: Cascade)
+  option  ProductOption? @relation(fields: [optionId], references: [id])
 
   @@unique([userId, productId, optionId])
   @@map("cart_items")
@@ -627,8 +669,29 @@ model Bookmark {
   @@map("bookmarks")
 }
 
+model CouponTemplate {
+  id                String       @id @default(cuid())
+  name              String
+  discountType      DiscountType
+  discountValue     Int
+  minOrderAmount    Int          @default(0)
+  maxDiscountAmount Int?
+  validDays         Int          @default(30)
+  totalQuantity     Int?
+  issuedCount       Int          @default(0)
+  isActive          Boolean      @default(true)
+  description       String?
+  createdAt         DateTime     @default(now())
+  updatedAt         DateTime     @updatedAt
+
+  coupons Coupon[]
+
+  @@map("coupon_templates")
+}
+
 model Coupon {
   id               String       @id @default(cuid())
+  templateId       String?
   userId           String
   name             String
   code             String       @unique
@@ -641,9 +704,11 @@ model Coupon {
   expiresAt        DateTime
   createdAt        DateTime     @default(now())
 
-  user   User    @relation(fields: [userId], references: [id], onDelete: Cascade)
-  orders Order[]
+  template CouponTemplate? @relation(fields: [templateId], references: [id], onDelete: SetNull)
+  user     User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  orders   Order[]
 
+  @@index([templateId])
   @@index([userId])
   @@index([code])
   @@map("coupons")
@@ -734,6 +799,7 @@ model Notice {
   title     String
   content   String   @db.Text
   isPinned  Boolean  @default(false)
+  isDeleted Boolean  @default(false)
   viewCount Int      @default(0)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
