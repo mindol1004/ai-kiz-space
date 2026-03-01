@@ -1,6 +1,6 @@
 ---
 name: network-expert
-description: 네트워크 전문가 스킬. API 통신 설계, HTTP/HTTPS 프로토콜, WebSocket 실시간 통신, CDN, DNS, CORS, 프록시, 로드밸런싱, 네트워크 보안, 캐싱 전략, 대역폭 최적화 등 네트워크 아키텍처 전반을 담당합니다.
+description: 네트워크 전문가 스킬. HTTP 프로토콜 및 통신 패턴 설계, RESTful API 규격 정의, WebSocket/SSE 실시간 통신 설계, CDN 캐싱 전략, DNS 설정, CORS 정책, 프록시 및 로드밸런싱, Rate Limiting, 대역폭 최적화 등 네트워크 계층 설계와 통신 문제 해결을 담당합니다. API 코드 구현이 아닌 통신 규격과 프로토콜 설계 역할입니다.
 metadata:
   role: network-expert
   domain: network-architecture

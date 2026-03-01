@@ -1,6 +1,6 @@
 ---
 name: frontend-expert
-description: 프론트엔드 개발 전문가 스킬. Next.js App Router 기반 페이지/컴포넌트 구현, React Server/Client Component, 상태 관리, 폼 처리, 데이터 페칭, 반응형 UI, 성능 최적화, 접근성 구현 등 프론트엔드 개발 전반을 TDD 방법론으로 담당합니다.
+description: 프론트엔드 개발 전문가 스킬. Next.js App Router 기반 페이지 및 React 컴포넌트 TSX 코드 구현, Server/Client Component 코드 작성, Zustand/TanStack Query 상태 관리 코드, React Hook Form 폼 처리 코드, 반응형 UI 코드 구현 등 프론트엔드 TSX/TypeScript 코드를 TDD 방법론으로 직접 작성합니다. 디자인 명세가 아닌 React 코드 구현 역할입니다.
 metadata:
   role: frontend-expert
   domain: frontend-development

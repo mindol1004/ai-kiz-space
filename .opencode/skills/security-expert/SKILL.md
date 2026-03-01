@@ -1,6 +1,6 @@
 ---
 name: security-expert
-description: 보안 전문가 스킬. 웹 애플리케이션 보안, 인증/인가 설계, OWASP Top 10 대응, 입력값 검증, XSS/CSRF/SQL Injection 방어, 데이터 암호화, 보안 헤더, CSP, 비밀 관리, 취약점 분석, 보안 감사 등 애플리케이션 보안 전반을 담당합니다.
+description: 보안 전문가 스킬. 보안 정책 수립, OWASP Top 10 취약점 분석 및 대응, 보안 아키텍처 설계, XSS/CSRF/SQL Injection 방어 전략, 데이터 암호화 정책, 보안 헤더 CSP 설정, 비밀 관리 정책, 보안 감사 및 코드 보안 리뷰 등 보안 위협 분석과 방어 전략을 담당합니다. 코드 구현이 아닌 보안 설계와 검토 역할입니다.
 metadata:
   role: security-expert
   domain: application-security

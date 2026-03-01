@@ -1,6 +1,6 @@
 ---
 name: qa-expert
-description: QA 전문가 스킬. 테스트 전략 수립, 테스트 케이스 설계, 자동화 테스트(Vitest, Testing Library, Playwright), 테스트 커버리지 관리, 회귀 테스트, 성능 테스트, 접근성 테스트, CI 통합, 버그 리포트 등 품질 보증 전반을 담당합니다.
+description: QA 전문가 스킬. 테스트 전략 수립 및 테스트 피라미드 관리, 테스트 케이스 설계(등가 분할, 경계값 분석), Playwright E2E 시나리오 작성, 테스트 커버리지 분석 및 목표 관리, 회귀 테스트, 접근성 테스트(axe-core), CI 테스트 파이프라인 통합, 버그 리포트 작성 등 품질 보증 전략과 검증을 담당합니다. 개별 단위 테스트 코드 작성이 아닌 전체 품질 전략과 E2E/통합 테스트 설계 역할입니다.
 metadata:
   role: qa-expert
   domain: quality-assurance

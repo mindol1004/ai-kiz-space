@@ -1,6 +1,6 @@
 ---
 name: designer-expert
-description: UI/UX 디자이너 전문가 스킬. 사용자 경험 설계, 디자인 시스템 구축, 컴포넌트 설계, 반응형 레이아웃, 접근성(A11y), 인터랙션 디자인, Tailwind CSS 기반 스타일링 등 프론트엔드 디자인 전반을 담당합니다.
+description: UI/UX 디자이너 전문가 스킬. 사용자 경험(UX) 설계, 디자인 시스템 및 디자인 토큰 정의, 컴포넌트 UI 명세 작성, 컬러 팔레트/타이포그래피 시스템, 와이어프레임 및 레이아웃 설계, 반응형 디자인 전략, 접근성(A11y) 가이드라인 등 시각적 디자인 설계를 담당합니다. React 코드 구현이 아닌 디자인 명세와 스타일 가이드 정의 역할입니다.
 metadata:
   role: designer-expert
   domain: ui-ux-design

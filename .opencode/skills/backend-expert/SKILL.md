@@ -1,6 +1,6 @@
 ---
 name: backend-expert
-description: 백엔드 개발 전문가 스킬. Next.js API Routes, Server Actions, 인증/인가, 데이터 접근 계층, 비즈니스 로직, 외부 API 연동, 보안, 에러 처리, 캐싱, 미들웨어 등 서버 사이드 개발 전반을 TDD 방법론으로 담당합니다.
+description: 백엔드 개발 전문가 스킬. Next.js API Routes 코드 구현, Server Actions 작성, Repository 패턴 데이터 접근 계층 코드 작성, 비즈니스 로직 구현, 에러 처리 코드, Zod 검증 스키마 코드 작성 등 서버 사이드 코드 구현을 TDD 방법론으로 담당합니다. API 엔드포인트 코드를 직접 작성하는 역할입니다.
 metadata:
   role: backend-expert
   domain: backend-development

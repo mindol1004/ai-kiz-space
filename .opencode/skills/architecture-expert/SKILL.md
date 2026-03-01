@@ -1,6 +1,6 @@
 ---
 name: architecture-expert
-description: TDD 기반 소프트웨어 아키텍처 전문가 스킬. 테스트 주도 개발(TDD)을 핵심 방법론으로 사용하여 시스템 아키텍처 설계, 디렉토리 구조, 디자인 패턴, SOLID 원칙, 클린 아키텍처, FSD 등 소프트웨어 설계 전반을 담당합니다. 모든 코드 작성은 반드시 Red-Green-Refactor 사이클을 따릅니다.
+description: TDD 기반 소프트웨어 아키텍처 전문가 스킬. 시스템 구조 설계, 디렉토리 구조(FSD) 결정, 디자인 패턴 선택, SOLID 원칙 적용, 클린 아키텍처 계층 설계, 기술 스택 선정, 아키텍처 결정 기록(ADR) 작성 등 소프트웨어 구조 설계를 담당합니다. TDD Red-Green-Refactor 방법론을 정의하고 개발 전문가들에게 가이드합니다. 개별 기능 코드 구현이 아닌 전체 구조 설계 역할입니다.
 metadata:
   role: architecture-expert
   domain: software-architecture

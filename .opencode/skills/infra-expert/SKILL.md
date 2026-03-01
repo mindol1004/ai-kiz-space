@@ -1,6 +1,6 @@
 ---
 name: infra-expert
-description: 인프라 전문가 스킬. 클라우드 인프라 설계, CI/CD 파이프라인, Docker 컨테이너화, Vercel/AWS 배포, 환경 구성, 모니터링/로깅, 스케일링, IaC(Infrastructure as Code), 장애 대응 등 인프라 운영 전반을 담당합니다.
+description: 인프라 전문가 스킬. CI/CD 파이프라인(GitHub Actions) 구축, Docker/docker-compose 컨테이너화, Vercel/AWS 배포 설정, 환경변수 및 환경별 구성(dev/staging/production), 모니터링 및 로깅 시스템, 헬스체크, 스케일링, 장애 대응 절차, 롤백 전략 등 빌드/배포/운영 인프라를 담당합니다. 애플리케이션 코드가 아닌 인프라 설정과 DevOps 역할입니다.
 metadata:
   role: infra-expert
   domain: infrastructure
