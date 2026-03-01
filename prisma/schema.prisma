@@ -1,0 +1,697 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// ─── Enums ───────────────────────────────────────────────
+
+enum UserRole {
+  USER
+  ADMIN
+  SUPER_ADMIN
+}
+
+enum UserGrade {
+  BRONZE
+  SILVER
+  GOLD
+  VIP
+}
+
+enum UserStatus {
+  ACTIVE
+  SUSPENDED
+  WITHDRAWN
+}
+
+enum AuthProvider {
+  EMAIL
+  KAKAO
+  NAVER
+  GOOGLE
+}
+
+enum Gender {
+  MALE
+  FEMALE
+  UNSPECIFIED
+}
+
+enum AgeGroup {
+  AGE_0_6M
+  AGE_6_12M
+  AGE_1_2
+  AGE_3_5
+  AGE_6_8
+  AGE_9_PLUS
+}
+
+enum ProductStatus {
+  ACTIVE
+  HIDDEN
+  SOLDOUT
+  DISCONTINUED
+}
+
+enum OrderStatus {
+  PENDING
+  PAID
+  PREPARING
+  SHIPPED
+  DELIVERED
+  CONFIRMED
+  CANCELLED
+  RETURN_REQUEST
+  RETURNED
+  EXCHANGE_REQUEST
+  EXCHANGED
+}
+
+enum PaymentMethod {
+  CARD
+  BANK_TRANSFER
+  KAKAO_PAY
+  NAVER_PAY
+  TOSS_PAY
+}
+
+enum DiscountType {
+  PERCENT
+  AMOUNT
+}
+
+enum PointType {
+  EARN
+  USE
+  EXPIRE
+  ADMIN
+}
+
+enum ReviewStatus {
+  VISIBLE
+  HIDDEN
+  REPORTED
+}
+
+enum PostStatus {
+  PUBLISHED
+  DRAFT
+  DELETED
+}
+
+enum NotificationType {
+  ORDER_STATUS
+  COMMENT
+  COMMENT_REPLY
+  LIKE
+  COUPON
+  POINT
+  SYSTEM
+  EVENT
+}
+
+enum BannerPosition {
+  MAIN_HERO
+  MAIN_MIDDLE
+  SHOP_TOP
+}
+
+// ─── Models ──────────────────────────────────────────────
+
+model User {
+  id                String    @id @default(cuid())
+  email             String    @unique
+  password          String?
+  name              String
+  nickname          String    @unique
+  phone             String?
+  profileImage      String?
+  role              UserRole  @default(USER)
+  grade             UserGrade @default(BRONZE)
+  points            Int       @default(0)
+  provider          AuthProvider @default(EMAIL)
+  providerId        String?
+  agreeMarketing    Boolean   @default(false)
+  status            UserStatus @default(ACTIVE)
+  loginFailCount    Int       @default(0)
+  lockedUntil       DateTime?
+  lastLoginAt       DateTime?
+  nicknameChangedAt DateTime?
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+
+  children       Child[]
+  addresses      Address[]
+  cartItems      CartItem[]
+  wishlists      Wishlist[]
+  orders         Order[]
+  reviews        Review[]
+  posts          Post[]
+  comments       Comment[]
+  postLikes      PostLike[]
+  commentLikes   CommentLike[]
+  bookmarks      Bookmark[]
+  coupons        Coupon[]
+  pointHistories PointHistory[]
+  notifications  Notification[]
+  auditLogs      AuditLog[]
+
+  @@index([provider, providerId], name: "users_provider_providerId")
+  @@index([status, createdAt], name: "users_status_createdAt")
+  @@map("users")
+}
+
+model Child {
+  id        String   @id @default(cuid())
+  userId    String
+  name      String?
+  birthDate DateTime
+  gender    Gender?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@map("children")
+}
+
+model Address {
+  id            String  @id @default(cuid())
+  userId        String
+  label         String?
+  recipientName String
+  phone         String
+  zipCode       String
+  address       String
+  addressDetail String?
+  isDefault     Boolean @default(false)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@map("addresses")
+}
+
+model Category {
+  id          String  @id @default(cuid())
+  name        String
+  slug        String  @unique
+  description String?
+  image       String?
+  parentId    String?
+  depth       Int     @default(0)
+  sortOrder   Int     @default(0)
+  isActive    Boolean @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  parent   Category?  @relation("CategoryTree", fields: [parentId], references: [id], onDelete: SetNull)
+  children Category[] @relation("CategoryTree")
+  products Product[]
+
+  @@index([parentId])
+  @@map("categories")
+}
+
+model Brand {
+  id          String  @id @default(cuid())
+  name        String  @unique
+  slug        String  @unique
+  logo        String?
+  description String?
+  isActive    Boolean @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  products Product[]
+
+  @@map("brands")
+}
+
+model Product {
+  id          String        @id @default(cuid())
+  name        String
+  slug        String        @unique
+  description String        @db.Text
+  price       Int
+  salePrice   Int?
+  categoryId  String
+  brandId     String
+  ageGroup    AgeGroup?
+  thumbnail   String
+  stock       Int           @default(0)
+  salesCount  Int           @default(0)
+  viewCount   Int           @default(0)
+  avgRating   Float         @default(0)
+  reviewCount Int           @default(0)
+  status      ProductStatus @default(ACTIVE)
+  isFeatured  Boolean       @default(false)
+  maxQuantity Int           @default(99)
+  shippingFee Int           @default(0)
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+
+  category    Category       @relation(fields: [categoryId], references: [id], onDelete: Restrict)
+  brand       Brand          @relation(fields: [brandId], references: [id], onDelete: Restrict)
+  images      ProductImage[]
+  options     ProductOption[]
+  cartItems   CartItem[]
+  wishlists   Wishlist[]
+  reviews     Review[]
+  orderItems  OrderItem[]
+  linkedPosts Post[]
+  exhibitions ExhibitionProduct[]
+
+  @@index([categoryId], name: "products_categoryId")
+  @@index([brandId], name: "products_brandId")
+  @@index([status, createdAt], name: "products_status_createdAt")
+  @@index([status, salesCount], name: "products_status_salesCount")
+  @@map("products")
+}
+
+model ProductImage {
+  id        String   @id @default(cuid())
+  productId String
+  url       String
+  alt       String?
+  sortOrder Int      @default(0)
+  createdAt DateTime @default(now())
+
+  product Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  @@index([productId])
+  @@map("product_images")
+}
+
+model ProductOption {
+  id              String  @id @default(cuid())
+  productId       String
+  name            String
+  additionalPrice Int     @default(0)
+  stock           Int     @default(0)
+  sku             String? @unique
+  isActive        Boolean @default(true)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  product    Product     @relation(fields: [productId], references: [id], onDelete: Cascade)
+  cartItems  CartItem[]
+  orderItems OrderItem[]
+
+  @@index([productId])
+  @@map("product_options")
+}
+
+model CartItem {
+  id        String   @id @default(cuid())
+  userId    String
+  productId String
+  optionId  String
+  quantity  Int
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user    User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  product Product       @relation(fields: [productId], references: [id], onDelete: Cascade)
+  option  ProductOption @relation(fields: [optionId], references: [id])
+
+  @@unique([userId, productId, optionId])
+  @@map("cart_items")
+}
+
+model Wishlist {
+  id        String   @id @default(cuid())
+  userId    String
+  productId String
+  createdAt DateTime @default(now())
+
+  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  product Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, productId])
+  @@map("wishlists")
+}
+
+model Order {
+  id             String      @id @default(cuid())
+  orderNumber    String      @unique
+  userId         String
+  status         OrderStatus @default(PENDING)
+  totalAmount    Int
+  discountAmount Int         @default(0)
+  shippingFee    Int         @default(0)
+  pointUsed      Int         @default(0)
+  finalAmount    Int
+  recipientName  String
+  recipientPhone String
+  zipCode        String
+  address        String
+  addressDetail  String?
+  shippingMemo   String?
+  paymentMethod  PaymentMethod
+  paymentKey     String?
+  paidAt         DateTime?
+  shippedAt      DateTime?
+  deliveredAt    DateTime?
+  confirmedAt    DateTime?
+  cancelledAt    DateTime?
+  cancelReason   String?
+  trackingNumber String?
+  trackingCompany String?
+  couponId       String?
+  createdAt      DateTime    @default(now())
+  updatedAt      DateTime    @updatedAt
+
+  user       User       @relation(fields: [userId], references: [id], onDelete: Restrict)
+  coupon     Coupon?    @relation(fields: [couponId], references: [id], onDelete: SetNull)
+  orderItems OrderItem[]
+  reviews    Review[]
+
+  @@index([userId, createdAt], name: "orders_userId_createdAt")
+  @@index([status, createdAt], name: "orders_status_createdAt")
+  @@map("orders")
+}
+
+model OrderItem {
+  id          String  @id @default(cuid())
+  orderId     String
+  productId   String
+  optionId    String?
+  productName String
+  optionName  String?
+  price       Int
+  quantity    Int
+  totalPrice  Int
+  createdAt   DateTime @default(now())
+
+  order   Order          @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  product Product        @relation(fields: [productId], references: [id], onDelete: Restrict)
+  option  ProductOption? @relation(fields: [optionId], references: [id], onDelete: SetNull)
+
+  @@index([orderId])
+  @@map("order_items")
+}
+
+model Review {
+  id            String       @id @default(cuid())
+  userId        String
+  productId     String
+  orderId       String
+  rating        Int
+  content       String       @db.Text
+  isPhotoReview Boolean      @default(false)
+  isBest        Boolean      @default(false)
+  status        ReviewStatus @default(VISIBLE)
+  createdAt     DateTime     @default(now())
+  updatedAt     DateTime     @updatedAt
+
+  user    User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  product Product       @relation(fields: [productId], references: [id], onDelete: Cascade)
+  order   Order         @relation(fields: [orderId], references: [id])
+  images  ReviewImage[]
+
+  @@unique([userId, productId])
+  @@index([productId])
+  @@map("reviews")
+}
+
+model ReviewImage {
+  id        String   @id @default(cuid())
+  reviewId  String
+  url       String
+  sortOrder Int      @default(0)
+  createdAt DateTime @default(now())
+
+  review Review @relation(fields: [reviewId], references: [id], onDelete: Cascade)
+
+  @@index([reviewId])
+  @@map("review_images")
+}
+
+model Post {
+  id              String     @id @default(cuid())
+  userId          String
+  boardSlug       String
+  title           String
+  content         String     @db.Text
+  viewCount       Int        @default(0)
+  likeCount       Int        @default(0)
+  commentCount    Int        @default(0)
+  isPinned        Boolean    @default(false)
+  isBlinded       Boolean    @default(false)
+  linkedProductId String?
+  status          PostStatus @default(PUBLISHED)
+  createdAt       DateTime   @default(now())
+  updatedAt       DateTime   @updatedAt
+
+  user          User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  linkedProduct Product?   @relation(fields: [linkedProductId], references: [id], onDelete: SetNull)
+  images        PostImage[]
+  tags          PostTag[]
+  comments      Comment[]
+  likes         PostLike[]
+  bookmarks     Bookmark[]
+
+  @@index([boardSlug, createdAt], name: "posts_boardSlug_createdAt")
+  @@index([userId], name: "posts_userId")
+  @@index([boardSlug, likeCount], name: "posts_boardSlug_likeCount")
+  @@map("posts")
+}
+
+model PostImage {
+  id        String   @id @default(cuid())
+  postId    String
+  url       String
+  sortOrder Int      @default(0)
+  createdAt DateTime @default(now())
+
+  post Post @relation(fields: [postId], references: [id], onDelete: Cascade)
+
+  @@index([postId])
+  @@map("post_images")
+}
+
+model PostTag {
+  id     String @id @default(cuid())
+  postId String
+  tag    String
+
+  post Post @relation(fields: [postId], references: [id], onDelete: Cascade)
+
+  @@index([postId])
+  @@index([tag])
+  @@map("post_tags")
+}
+
+model Comment {
+  id         String   @id @default(cuid())
+  postId     String
+  userId     String
+  parentId   String?
+  content    String   @db.Text
+  likeCount  Int      @default(0)
+  isDeleted  Boolean  @default(false)
+  isAccepted Boolean  @default(false)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  post     Post          @relation(fields: [postId], references: [id], onDelete: Cascade)
+  user     User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  parent   Comment?      @relation("CommentThread", fields: [parentId], references: [id], onDelete: SetNull)
+  replies  Comment[]     @relation("CommentThread")
+  likes    CommentLike[]
+
+  @@index([postId])
+  @@index([userId])
+  @@map("comments")
+}
+
+model PostLike {
+  id        String   @id @default(cuid())
+  postId    String
+  userId    String
+  createdAt DateTime @default(now())
+
+  post Post @relation(fields: [postId], references: [id], onDelete: Cascade)
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([postId, userId])
+  @@map("post_likes")
+}
+
+model CommentLike {
+  id        String   @id @default(cuid())
+  commentId String
+  userId    String
+  createdAt DateTime @default(now())
+
+  comment Comment @relation(fields: [commentId], references: [id], onDelete: Cascade)
+  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([commentId, userId])
+  @@map("comment_likes")
+}
+
+model Bookmark {
+  id        String   @id @default(cuid())
+  postId    String
+  userId    String
+  createdAt DateTime @default(now())
+
+  post Post @relation(fields: [postId], references: [id], onDelete: Cascade)
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([postId, userId])
+  @@map("bookmarks")
+}
+
+model Coupon {
+  id               String       @id @default(cuid())
+  userId           String
+  name             String
+  code             String       @unique
+  discountType     DiscountType
+  discountValue    Int
+  minOrderAmount   Int          @default(0)
+  maxDiscountAmount Int?
+  isUsed           Boolean      @default(false)
+  usedAt           DateTime?
+  expiresAt        DateTime
+  createdAt        DateTime     @default(now())
+
+  user   User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  orders Order[]
+
+  @@index([userId])
+  @@index([code])
+  @@map("coupons")
+}
+
+model PointHistory {
+  id             String    @id @default(cuid())
+  userId         String
+  type           PointType
+  amount         Int
+  balance        Int
+  description    String
+  relatedOrderId String?
+  createdAt      DateTime  @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, createdAt])
+  @@map("point_histories")
+}
+
+model Notification {
+  id        String           @id @default(cuid())
+  userId    String
+  type      NotificationType
+  title     String
+  message   String
+  link      String?
+  isRead    Boolean          @default(false)
+  createdAt DateTime         @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, isRead, createdAt], name: "notifications_userId_isRead_createdAt")
+  @@map("notifications")
+}
+
+model Exhibition {
+  id          String   @id @default(cuid())
+  title       String
+  slug        String   @unique
+  description String?  @db.Text
+  bannerImage String
+  startDate   DateTime
+  endDate     DateTime
+  isActive    Boolean  @default(true)
+  sortOrder   Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  products ExhibitionProduct[]
+
+  @@map("exhibitions")
+}
+
+model ExhibitionProduct {
+  id           String @id @default(cuid())
+  exhibitionId String
+  productId    String
+  sortOrder    Int    @default(0)
+
+  exhibition Exhibition @relation(fields: [exhibitionId], references: [id], onDelete: Cascade)
+  product    Product    @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  @@unique([exhibitionId, productId])
+  @@map("exhibition_products")
+}
+
+model Banner {
+  id             String         @id @default(cuid())
+  title          String
+  imageUrl       String
+  mobileImageUrl String?
+  linkUrl        String?
+  position       BannerPosition
+  sortOrder      Int            @default(0)
+  startDate      DateTime
+  endDate        DateTime
+  isActive       Boolean        @default(true)
+  createdAt      DateTime       @default(now())
+  updatedAt      DateTime       @updatedAt
+
+  @@map("banners")
+}
+
+model Notice {
+  id        String   @id @default(cuid())
+  title     String
+  content   String   @db.Text
+  isPinned  Boolean  @default(false)
+  viewCount Int      @default(0)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("notices")
+}
+
+model FAQ {
+  id        String   @id @default(cuid())
+  category  String
+  question  String
+  answer    String   @db.Text
+  sortOrder Int      @default(0)
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("faqs")
+}
+
+model AuditLog {
+  id        String   @id @default(cuid())
+  userId    String
+  action    String
+  entity    String
+  entityId  String
+  changes   Json?
+  ipAddress String?
+  userAgent String?
+  createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id])
+
+  @@index([userId, createdAt], name: "audit_logs_userId_createdAt")
+  @@index([entity, entityId], name: "audit_logs_entity_entityId")
+  @@map("audit_logs")
+}
