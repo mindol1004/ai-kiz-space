@@ -50,7 +50,14 @@ export function SearchBar({
   useEffect(() => {
     const saved = localStorage.getItem(RECENT_SEARCHES_KEY);
     if (saved) {
-      setRecentSearches(JSON.parse(saved));
+      try {
+        const parsed = JSON.parse(saved);
+        if (Array.isArray(parsed)) {
+          return () => setRecentSearches(parsed);
+        }
+      } catch (error) {
+        console.error('Failed to parse recent searches:', error);
+      }
     }
   }, []);
 

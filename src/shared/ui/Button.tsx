@@ -50,7 +50,7 @@ const LoadingSpinner = () => (
   </svg>
 );
 
-export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
+const Button = forwardRef<HTMLButtonElement, ButtonProps>(
   (
     {
       variant = "primary",

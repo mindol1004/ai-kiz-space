@@ -1,10 +1,14 @@
-"use client";
-
 import { HTMLAttributes } from "react";
 
-interface CardProps extends HTMLAttributes<HTMLDivElement> {
+type CardProps = HTMLAttributes<HTMLDivElement> & {
   hover?: boolean;
-}
+};
+
+type CardHeaderProps = HTMLAttributes<HTMLDivElement>;
+
+type CardBodyProps = HTMLAttributes<HTMLDivElement>;
+
+type CardFooterProps = HTMLAttributes<HTMLDivElement>;
 
 export function Card({
   hover = false,
@@ -29,8 +33,6 @@ export function Card({
   );
 }
 
-interface CardHeaderProps extends HTMLAttributes<HTMLDivElement> {}
-
 export function CardHeader({
   className = "",
   children,
@@ -46,8 +48,6 @@ export function CardHeader({
   );
 }
 
-interface CardBodyProps extends HTMLAttributes<HTMLDivElement> {}
-
 export function CardBody({
   className = "",
   children,
@@ -55,8 +55,6 @@ export function CardBody({
 }: CardBodyProps) {
   return <div className={`p-4 ${className}`} {...props}>{children}</div>;
 }
-
-interface CardFooterProps extends HTMLAttributes<HTMLDivElement> {}
 
 export function CardFooter({
   className = "",
