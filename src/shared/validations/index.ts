@@ -86,6 +86,8 @@ export const reportSchema = z.object({
   reason: z.string().min(1, "신고 사유를 선택해주세요."),
 });
 
+export { checkEmailSchema, checkNicknameSchema } from "./auth";
+
 export const cartItemSchema = z.object({
   productId: z.string(),
   quantity: z.number().min(1, "수량은 1개 이상이어야 합니다."),
